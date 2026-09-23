@@ -1,0 +1,34 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import type { Locale } from '../i18n/config';
+import { localeMeta } from '../i18n/config';
+import { href } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+import { privacy, privacyUpdated } from '../content/privacy';
+import { breadcrumb } from '../lib/schema';
+
+interface Props { lang: Locale; alternates: { lang: Locale; href: string }[] }
+const { lang, alternates } = Astro.props;
+const t = useT(lang);
+const c = privacy[lang];
+const crumbs = [
+  { name: t('nav.home'), href: href({ page: 'home' }, lang) },
+  { name: t('nav.privacy'), href: href({ page: 'privacy' }, lang) },
+];
+const date = new Intl.DateTimeFormat(localeMeta[lang].htmlLang, { dateStyle: 'long' }).format(new Date(privacyUpdated));
+---
+
+<Base lang={lang} title={c.title} description={c.description} alternates={alternates} jsonLd={[breadcrumb(crumbs)]}>
+  <PageHead lang={lang} crumbs={crumbs} title={c.heading} lead={`${c.updated}: ${date}`} />
+  <section class="section">
+    <div class="container prose">
+      {c.sections.map((s) => (
+        <>
+          <h2>{s.h}</h2>
+          {s.p.map((p) => <p>{p}</p>)}
+        </>
+      ))}
+    </div>
+  </section>
+</Base>

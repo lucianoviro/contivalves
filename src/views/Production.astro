@@ -1,0 +1,74 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Media from '../components/Media.astro';
+import YouTube from '../components/YouTube.astro';
+import CtaBand from '../components/CtaBand.astro';
+import type { Locale } from '../i18n/config';
+import { href } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+import { production } from '../content/production';
+import { site } from '../data/site';
+import { breadcrumb, webPage } from '../lib/schema';
+
+interface Props { lang: Locale; alternates: { lang: Locale; href: string }[] }
+const { lang, alternates } = Astro.props;
+const t = useT(lang);
+const c = production[lang];
+const crumbs = [
+  { name: t('nav.home'), href: href({ page: 'home' }, lang) },
+  { name: t('nav.company'), href: href({ page: 'company' }, lang) },
+  { name: t('nav.production'), href: href({ page: 'production' }, lang) },
+];
+const howTo = {
+  '@type': 'HowTo',
+  name: c.heading,
+  description: c.lead,
+  step: c.steps.map((s, i) => ({ '@type': 'HowToStep', position: i + 1, name: s.title, text: s.text })),
+};
+---
+
+<Base lang={lang} title={c.title} description={c.description} alternates={alternates} image="2018/11/produzione-header.jpg" jsonLd={[webPage('WebPage', c.heading, c.description, crumbs[2].href, lang), breadcrumb(crumbs), howTo]}>
+  <PageHead lang={lang} crumbs={crumbs} eyebrow={t('nav.production')} title={c.heading} lead={c.lead} />
+
+  <section class="section">
+    <div class="container split">
+      <div>
+        <p class="lead">{c.text}</p>
+      </div>
+      <div class="frame"><Media src="2018/11/produzione-header.jpg" alt={c.heading} widths={[480, 720, 960, 1280]} sizes="(min-width: 900px) 45vw, 100vw" /></div>
+    </div>
+  </section>
+
+  <section class="section section--mist">
+    <div class="container">
+      <ol class="steps">
+        {c.steps.map((s, i) => (
+          <li class="step">
+            <span class="step__n">{String(i + 1).padStart(2, '0')}</span>
+            <h2 class="step__title">{s.title}</h2>
+            <p>{s.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container narrow">
+      <YouTube id={site.youtubeVideo} title={c.videoTitle} />
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>
+
+<style>
+  .frame { border-radius: 24px; overflow: hidden; background: var(--mist-2); aspect-ratio: 16 / 10; }
+  .frame :global(img), .frame :global(.ph) { width: 100%; height: 100%; object-fit: cover; }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); counter-reset: step; }
+  .step { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 26px; }
+  .step__n { font-family: var(--font-display); font-weight: 600; font-size: 1rem; color: var(--bronze-ink); letter-spacing: 0.1em; }
+  .step__title { font-size: 1.6rem; margin: 6px 0 10px; }
+  .step p { margin: 0; color: var(--slate-dark); font-size: 0.95rem; }
+</style>

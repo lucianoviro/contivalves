@@ -1,0 +1,49 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import FamilyCard from '../components/FamilyCard.astro';
+import CtaBand from '../components/CtaBand.astro';
+import type { Locale } from '../i18n/config';
+import { href } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+import { productsPage } from '../content/misc';
+import { families } from '../data/families';
+import { breadcrumb, familyList, webPage } from '../lib/schema';
+
+interface Props { lang: Locale; alternates: { lang: Locale; href: string }[] }
+const { lang, alternates } = Astro.props;
+const t = useT(lang);
+const c = productsPage[lang];
+const crumbs = [
+  { name: t('nav.home'), href: href({ page: 'home' }, lang) },
+  { name: t('nav.products'), href: href({ page: 'products' }, lang) },
+];
+---
+
+<Base lang={lang} title={c.title} description={c.description} alternates={alternates} jsonLd={[webPage('CollectionPage', c.heading, c.description, crumbs[1].href, lang), breadcrumb(crumbs), familyList(lang)]}>
+  <PageHead lang={lang} crumbs={crumbs} title={c.heading} lead={c.lead} />
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid-3">
+        {families.map((f) => <FamilyCard family={f} lang={lang} showIntro />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mist">
+    <div class="container split">
+      <div>
+        <h2>{c.materialsHeading}</h2>
+        <p class="lead">{c.materialsText}</p>
+      </div>
+      <div class="btn-row">
+        <a class="btn btn--primary" href={href({ page: 'custom' }, lang)}>{t('nav.custom')}</a>
+        <a class="btn btn--ghost" href={href({ page: 'alubronze' }, lang)}>{t('nav.alubronze')}</a>
+        <a class="btn btn--ghost" href={href({ page: 'literature' }, lang)}>{t('nav.literature')}</a>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>

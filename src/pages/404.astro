@@ -1,0 +1,34 @@
+---
+import Base from '../layouts/Base.astro';
+import { locales, localeMeta } from '../i18n/config';
+import { href } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+
+const lang = 'en';
+const t = useT(lang);
+const alternates = locales.map((l) => ({ lang: l, href: href({ page: 'home' }, l) }));
+---
+
+<Base lang={lang} title={`${t('notFound.title')} | Conti Valves`} description={t('notFound.text')} alternates={alternates} noindex>
+  <section class="section">
+    <div class="container narrow">
+      <p class="eyebrow">404</p>
+      <h1>{t('notFound.title')}</h1>
+      <p class="lead">{t('notFound.text')}</p>
+      <div class="btn-row">
+        <a class="btn btn--primary" href={href({ page: 'products' }, lang)}>{t('nav.products')}</a>
+        <a class="btn btn--ghost" href="/">{t('nav.home')}</a>
+      </div>
+      <ul class="others">
+        {locales.filter((l) => l !== lang).map((l) => {
+          const tt = useT(l);
+          return <li lang={l}><a href={href({ page: 'home' }, l)}>{localeMeta[l].name}</a> – {tt('notFound.title')}</li>;
+        })}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .others { margin-top: 40px; padding: 0; list-style: none; color: var(--slate); display: grid; gap: 6px; }
+</style>

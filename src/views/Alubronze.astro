@@ -1,0 +1,55 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Media from '../components/Media.astro';
+import ProductCard from '../components/ProductCard.astro';
+import CtaBand from '../components/CtaBand.astro';
+import type { Locale } from '../i18n/config';
+import { href } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+import { alubronze } from '../content/applications';
+import { products } from '../data/catalog';
+import { breadcrumb, productList, webPage } from '../lib/schema';
+
+interface Props { lang: Locale; alternates: { lang: Locale; href: string }[] }
+const { lang, alternates } = Astro.props;
+const t = useT(lang);
+const c = alubronze[lang];
+const crumbs = [
+  { name: t('nav.home'), href: href({ page: 'home' }, lang) },
+  { name: t('nav.applications'), href: href({ page: 'applications' }, lang) },
+  { name: t('nav.alubronze'), href: href({ page: 'alubronze' }, lang) },
+];
+// Items with an aluminium-bronze version, straight from the catalogue.
+const range = products.filter((p) => p.variants.some((v) => /aluminium bronze/i.test(v.text)));
+---
+
+<Base lang={lang} title={c.title} description={c.description} alternates={alternates} image="2018/12/bronzo-alluminio-header.jpg" jsonLd={[webPage('WebPage', c.heading, c.description, crumbs[2].href, lang), breadcrumb(crumbs), productList(range, lang)]}>
+  <PageHead lang={lang} crumbs={crumbs} eyebrow="Cu-Al" title={c.heading} lead={c.lead} />
+
+  <section class="section">
+    <div class="container split">
+      <div class="prose">{c.paragraphs.map((p) => <p>{p}</p>)}</div>
+      <div>
+        <div class="frame"><Media src="2018/12/bronzo-alluminio-header.jpg" alt={c.heading} widths={[480, 720, 960]} sizes="(min-width: 900px) 45vw, 100vw" /></div>
+        <h2 class="props-title">{c.propertiesHeading}</h2>
+        <ul class="check-list">{c.properties.map((p) => <li>{p}</li>)}</ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mist">
+    <div class="container">
+      <h2>{c.rangeHeading}</h2>
+      <div class="grid grid-4">{range.map((p) => <ProductCard product={p} lang={lang} />)}</div>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>
+
+<style>
+  .frame { border-radius: 24px; overflow: hidden; background: var(--mist-2); aspect-ratio: 16 / 10; margin-bottom: 28px; }
+  .frame :global(img), .frame :global(.ph) { width: 100%; height: 100%; object-fit: cover; }
+  .props-title { font-size: 1.6rem; }
+</style>

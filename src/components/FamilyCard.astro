@@ -1,0 +1,28 @@
+---
+import Media from './Media.astro';
+import type { Locale } from '../i18n/config';
+import { href } from '../i18n/routes';
+import type { Family } from '../data/families';
+import { productsOf } from '../data/catalog';
+import { familyCount } from '../content/misc';
+
+interface Props { family: Family; lang: Locale; showIntro?: boolean }
+const { family: f, lang, showIntro = false } = Astro.props;
+const count = productsOf(f.key).length;
+---
+
+<article class="card family-card">
+  <div class="card__media">
+    <Media src={f.image} alt={f.name[lang]} widths={[320, 480, 640]} sizes="(min-width: 1100px) 300px, (min-width: 640px) 45vw, 90vw" />
+  </div>
+  <div class="card__body">
+    <h3 class="card__title"><a class="stretched" href={href({ page: 'family', family: f.key }, lang)}>{f.name[lang]}</a></h3>
+    {showIntro && <p class="card__text">{f.intro[lang].split('. ')[0]}.</p>}
+    <div class="card__meta"><span class="chip">{familyCount[lang](count)}</span></div>
+  </div>
+</article>
+
+<style>
+  .family-card .card__media { aspect-ratio: 1 / 1; }
+  .family-card:hover .card__title { color: var(--bronze-ink); }
+</style>

@@ -1,0 +1,195 @@
+---
+import type { Locale } from '../i18n/config';
+import { locales, localeMeta } from '../i18n/config';
+import { href } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+import { families } from '../data/families';
+
+interface Props {
+  lang: Locale;
+  alternates: { lang: Locale; href: string }[];
+}
+
+const { lang, alternates } = Astro.props;
+const t = useT(lang);
+const current = Astro.url.pathname;
+
+const companyLinks = [
+  { label: t('nav.companyOverview'), href: href({ page: 'company' }, lang) },
+  { label: t('nav.history'), href: href({ page: 'history' }, lang) },
+  { label: t('nav.production'), href: href({ page: 'production' }, lang) },
+  { label: t('nav.certifications'), href: href({ page: 'certifications' }, lang) },
+  { label: t('nav.environment'), href: href({ page: 'environment' }, lang) },
+];
+const applicationLinks = [
+  { label: t('nav.industries'), href: href({ page: 'applications' }, lang) },
+  { label: t('nav.custom'), href: href({ page: 'custom' }, lang) },
+  { label: t('nav.alubronze'), href: href({ page: 'alubronze' }, lang) },
+];
+const productsHref = href({ page: 'products' }, lang);
+const familyLinks = families.map((f) => ({ label: f.name[lang], href: href({ page: 'family', family: f.key }, lang) }));
+
+const is = (path: string) => current.startsWith(path);
+const menus = [
+  { id: 'products', label: t('nav.products'), href: productsHref, links: familyLinks, wide: true, all: { label: t('nav.allProducts'), href: productsHref } },
+  { id: 'company', label: t('nav.company'), href: companyLinks[0].href, links: companyLinks },
+  { id: 'applications', label: t('nav.applications'), href: applicationLinks[0].href, links: applicationLinks },
+];
+const simple = [
+  { label: t('nav.literature'), href: href({ page: 'literature' }, lang) },
+  { label: t('nav.news'), href: href({ page: 'news' }, lang) },
+];
+const contactHref = href({ page: 'contact' }, lang);
+---
+
+<header class="site-header">
+  <a class="skip" href="#main">{t('nav.skip')}</a>
+  <div class="container bar">
+    <a class="brand" href={href({ page: 'home' }, lang)} aria-label="Conti Valves – home">
+      <img src="/logo-conti.png" width="114" height="40" alt="Conti – valve manufacturer since 1919" />
+    </a>
+
+    <nav class="nav" aria-label="Main">
+      <ul class="nav__list">
+        {menus.map((m) => (
+          <li class:list={['nav__item has-menu', { wide: m.wide }]}>
+            <a href={m.href} class:list={['nav__link', { active: is(m.href) }]} aria-haspopup="true">
+              {m.label}
+              <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" /></svg>
+            </a>
+            <div class="menu">
+              <ul>
+                {m.links.map((l) => <li><a href={l.href} aria-current={current === l.href ? 'page' : undefined}>{l.label}</a></li>)}
+              </ul>
+              {m.all && <a class="menu__all link-arrow" href={m.all.href}>{m.all.label}</a>}
+            </div>
+          </li>
+        ))}
+        {simple.map((s) => (
+          <li class="nav__item"><a href={s.href} class:list={['nav__link', { active: is(s.href) }]}>{s.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="tools">
+      <div class="lang has-menu">
+        <button class="lang__btn" type="button" aria-label={t('nav.language')} aria-haspopup="true">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" stroke-width="1.4" /><path d="M2.5 10h15M10 2.5c2.2 2.3 2.2 12.7 0 15M10 2.5c-2.2 2.3-2.2 12.7 0 15" fill="none" stroke="currentColor" stroke-width="1.4" /></svg>
+          {localeMeta[lang].label}
+        </button>
+        <ul class="menu menu--lang">
+          {alternates.map((a) => (
+            <li><a href={a.href} hreflang={localeMeta[a.lang].htmlLang} lang={localeMeta[a.lang].htmlLang} aria-current={a.lang === lang ? 'true' : undefined}>{localeMeta[a.lang].name}</a></li>
+          ))}
+        </ul>
+      </div>
+      <a class="btn btn--primary contact-btn" href={contactHref}>{t('nav.contact')}</a>
+      <button class="burger" type="button" aria-expanded="false" aria-controls="mobile-nav">
+        <span class="visually-hidden">{t('nav.menu')}</span>
+        <span class="burger__lines" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-nav" class="mobile" hidden>
+    <div class="container">
+      {menus.map((m) => (
+        <details class="mobile__group">
+          <summary>{m.label}</summary>
+          <ul>
+            {m.all && <li><a href={m.all.href}><strong>{m.all.label}</strong></a></li>}
+            {m.links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+          </ul>
+        </details>
+      ))}
+      {simple.map((s) => <a class="mobile__link" href={s.href}>{s.label}</a>)}
+      <a class="mobile__link" href={contactHref}>{t('nav.contact')}</a>
+      <div class="mobile__langs" aria-label={t('nav.language')}>
+        {locales.map((l) => {
+          const a = alternates.find((x) => x.lang === l)!;
+          return <a href={a.href} hreflang={l} aria-current={l === lang ? 'true' : undefined}>{localeMeta[l].label}</a>;
+        })}
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  const burger = document.querySelector<HTMLButtonElement>('.burger');
+  const panel = document.getElementById('mobile-nav');
+  burger?.addEventListener('click', () => {
+    const open = burger.getAttribute('aria-expanded') === 'true';
+    burger.setAttribute('aria-expanded', String(!open));
+    if (panel) panel.hidden = open;
+    document.body.classList.toggle('nav-open', !open);
+  });
+  // Close desktop menus with Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.activeElement instanceof HTMLElement && document.activeElement.closest('.has-menu')) {
+      document.activeElement.blur();
+    }
+  });
+</script>
+
+<style>
+  .site-header { position: sticky; top: 0; z-index: 50; background: rgb(255 255 255 / 0.92); backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--line); }
+  .skip { position: absolute; left: 16px; top: -100px; background: var(--ink); color: #fff; padding: 8px 14px; border-radius: 6px; z-index: 100; }
+  .skip:focus { top: 12px; }
+  .bar { height: var(--header-h); display: flex; align-items: center; gap: 24px; }
+  .brand { flex: none; display: block; }
+  .brand img { height: 40px; width: auto; }
+
+  .nav { margin-left: auto; display: none; }
+  @media (min-width: 1080px) { .nav { display: block; } }
+  .nav__list { list-style: none; display: flex; gap: 2px; margin: 0; padding: 0; }
+  .nav__item { position: relative; }
+  .nav__link { display: inline-flex; align-items: center; gap: 4px; padding: 10px 12px; border-radius: 8px; color: var(--ink); text-decoration: none; font-weight: 500; font-size: 0.95rem; }
+  .nav__link svg { width: 12px; height: 12px; color: var(--slate); transition: transform 0.15s; }
+  .nav__link:hover, .has-menu:hover > .nav__link, .has-menu:focus-within > .nav__link { background: var(--mist); color: var(--ink); }
+  .nav__link.active { color: var(--bronze-ink); }
+
+  .menu { position: absolute; top: calc(100% + 6px); left: 0; min-width: 260px; padding: 10px; list-style: none; margin: 0; background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); opacity: 0; visibility: hidden; transform: translateY(-4px); transition: opacity 0.15s, transform 0.15s, visibility 0.15s; }
+  .menu::before { content: ''; position: absolute; inset: -8px 0 auto; height: 8px; }
+  .menu ul { list-style: none; margin: 0; padding: 0; }
+  .has-menu:hover > .menu, .has-menu:focus-within > .menu { opacity: 1; visibility: visible; transform: none; }
+  .has-menu:hover > .nav__link svg, .has-menu:focus-within > .nav__link svg { transform: rotate(180deg); }
+  .menu a { display: block; padding: 8px 12px; border-radius: 8px; color: var(--ink); text-decoration: none; font-size: 0.93rem; }
+  .menu a:hover, .menu a[aria-current] { background: var(--mist); }
+  .wide .menu { width: 520px; }
+  .wide .menu ul { display: grid; grid-template-columns: 1fr 1fr; gap: 0 6px; }
+  .menu__all { display: inline-flex !important; margin: 6px 0 2px; }
+
+  .tools { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+  @media (min-width: 1080px) { .tools { margin-left: 8px; } }
+  .lang { position: relative; }
+  .lang__btn { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 10px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font: 600 0.85rem var(--font-sans); color: var(--ink); cursor: pointer; }
+  .lang__btn svg { width: 16px; height: 16px; color: var(--slate); }
+  .menu--lang { left: auto; right: 0; min-width: 170px; }
+  .menu--lang a[aria-current] { font-weight: 600; color: var(--bronze-ink); }
+  .contact-btn { display: none; min-height: 42px; }
+  @media (min-width: 720px) { .contact-btn { display: inline-flex; } }
+
+  .burger { display: inline-grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 999px; background: #fff; cursor: pointer; }
+  @media (min-width: 1080px) { .burger { display: none; } }
+  .burger__lines, .burger__lines::before, .burger__lines::after { display: block; width: 18px; height: 2px; background: var(--ink); border-radius: 2px; transition: transform 0.2s, opacity 0.2s; }
+  .burger__lines { position: relative; }
+  .burger__lines::before, .burger__lines::after { content: ''; position: absolute; left: 0; }
+  .burger__lines::before { top: -6px; }
+  .burger__lines::after { top: 6px; }
+  .burger[aria-expanded='true'] .burger__lines { background: transparent; }
+  .burger[aria-expanded='true'] .burger__lines::before { transform: translateY(6px) rotate(45deg); }
+  .burger[aria-expanded='true'] .burger__lines::after { transform: translateY(-6px) rotate(-45deg); }
+
+  .mobile { border-top: 1px solid var(--line); background: #fff; max-height: calc(100dvh - var(--header-h)); overflow-y: auto; padding-bottom: 24px; }
+  @media (min-width: 1080px) { .mobile { display: none !important; } }
+  .mobile__group summary, .mobile__link { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); font-weight: 600; font-size: 1.05rem; color: var(--ink); text-decoration: none; cursor: pointer; list-style: none; }
+  .mobile__group summary::-webkit-details-marker { display: none; }
+  .mobile__group summary::after { content: '+'; font-weight: 400; font-size: 1.4rem; color: var(--slate); }
+  .mobile__group[open] summary::after { content: '–'; }
+  .mobile__group ul { list-style: none; margin: 0; padding: 6px 0 12px; }
+  .mobile__group li a { display: block; padding: 9px 0 9px 12px; color: var(--slate-dark); text-decoration: none; }
+  .mobile__langs { display: flex; gap: 8px; padding-top: 20px; }
+  .mobile__langs a { padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; color: var(--ink); font-weight: 600; font-size: 0.85rem; }
+  .mobile__langs a[aria-current] { background: var(--ink); color: #fff; border-color: var(--ink); }
+  :global(body.nav-open) { overflow: hidden; }
+</style>

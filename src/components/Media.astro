@@ -1,0 +1,44 @@
+---
+import { Picture } from 'astro:assets';
+import { getImage } from '../lib/media';
+
+interface Props {
+  src: string | null | undefined;
+  alt: string;
+  widths?: number[];
+  sizes?: string;
+  loading?: 'lazy' | 'eager';
+  class?: string;
+  fetchpriority?: 'high' | 'low' | 'auto';
+}
+
+const { src, alt, widths = [320, 480, 720, 960], sizes = '(min-width: 900px) 33vw, 100vw', loading = 'lazy', class: className, fetchpriority } = Astro.props;
+const image = getImage(src);
+const usable = image ? widths.filter((w) => w <= image.width) : [];
+if (image && !usable.length) usable.push(image.width);
+---
+
+{
+  image ? (
+    <Picture
+      src={image}
+      alt={alt}
+      widths={usable}
+      sizes={sizes}
+      formats={['avif', 'webp']}
+      loading={loading}
+      decoding="async"
+      fetchpriority={fetchpriority}
+      class={className}
+    />
+  ) : (
+    <div class:list={['ph', className]} role="img" aria-label={alt}>
+      <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <rect x="4" y="26" width="10" height="16" rx="1" />
+        <rect x="50" y="26" width="10" height="16" rx="1" />
+        <path d="M14 30h8l4-6h12l4 6h8M14 38h8l4 6h12l4-6h8" />
+        <path d="M32 24V12M24 12h16" />
+      </svg>
+    </div>
+  )
+}

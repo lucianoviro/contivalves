@@ -1,0 +1,36 @@
+---
+/** Click-to-load YouTube (privacy-enhanced domain): nothing is requested from Google until the visitor clicks. */
+interface Props { id: string; title: string }
+const { id, title } = Astro.props;
+---
+
+<div class="yt" data-id={id} data-title={title}>
+  <button type="button" class="yt__btn" aria-label={`▶ ${title}`}>
+    <span class="yt__play" aria-hidden="true">
+      <svg viewBox="0 0 68 48"><path d="M66.5 7.7a8.5 8.5 0 0 0-6-6C55.2.3 34 .3 34 .3s-21.2 0-26.5 1.4a8.5 8.5 0 0 0-6 6C.1 13 .1 24 .1 24s0 11 1.4 16.3a8.5 8.5 0 0 0 6 6C12.8 47.7 34 47.7 34 47.7s21.2 0 26.5-1.4a8.5 8.5 0 0 0 6-6C67.9 35 67.9 24 67.9 24s0-11-1.4-16.3z" fill="#c8702a"/><path d="M45 24 27 14v20z" fill="#fff"/></svg>
+    </span>
+    <span class="yt__title">{title}</span>
+  </button>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.yt').forEach((el) => {
+    el.querySelector('button')?.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${el.dataset.id}?autoplay=1&rel=0`;
+      iframe.title = el.dataset.title ?? '';
+      iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+      iframe.allowFullscreen = true;
+      el.replaceChildren(iframe);
+    });
+  });
+</script>
+
+<style>
+  .yt { position: relative; aspect-ratio: 16 / 9; border-radius: var(--radius-lg); overflow: hidden; background: radial-gradient(120% 120% at 20% 10%, #2a2d34, var(--night)); }
+  .yt :global(iframe) { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .yt__btn { position: absolute; inset: 0; width: 100%; display: grid; place-items: center; align-content: center; gap: 14px; border: 0; background: none; cursor: pointer; color: #fff; font: 600 1.05rem var(--font-sans); }
+  .yt__play svg { width: 76px; height: auto; transition: transform 0.2s; }
+  .yt__btn:hover .yt__play svg { transform: scale(1.08); }
+  .yt__title { opacity: 0.85; padding-inline: 16px; text-align: center; }
+</style>

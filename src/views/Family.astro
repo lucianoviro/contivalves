@@ -1,0 +1,84 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import ProductCard from '../components/ProductCard.astro';
+import CtaBand from '../components/CtaBand.astro';
+import type { Locale } from '../i18n/config';
+import { href } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+import { familyByKey, families, type FamilyKey } from '../data/families';
+import { bodyAlloy, groupedProducts, pn, productsOf, subcategoryName } from '../data/catalog';
+import { materialNames } from '../data/glossary';
+import { familyCount } from '../content/misc';
+import { breadcrumb, productList, webPage } from '../lib/schema';
+
+interface Props { lang: Locale; alternates: { lang: Locale; href: string }[]; family: FamilyKey }
+const { lang, alternates, family } = Astro.props;
+const t = useT(lang);
+const f = familyByKey[family];
+const list = productsOf(family);
+const groups = groupedProducts(family);
+
+// "Ball valves – Brass, DZR brass, Bronze · PN10–PN64 | Conti Valves"
+const alloys = [...new Set(list.map(bodyAlloy).filter((a): a is string => !!a))];
+const alloyNames = alloys.map((a) => materialNames[a]?.[lang] ?? a);
+const pns = list.map((p) => pn(p)).flatMap((x) => (x ? x.replace('PN', '').split('-').map(Number) : []));
+const pnRange = pns.length ? (Math.min(...pns) === Math.max(...pns) ? `PN${pns[0]}` : `PN${Math.min(...pns)}–PN${Math.max(...pns)}`) : '';
+const title = `${f.name[lang]} – ${alloyNames.join(', ')}${pnRange ? ` · ${pnRange}` : ''} | Conti Valves`;
+
+const crumbs = [
+  { name: t('nav.home'), href: href({ page: 'home' }, lang) },
+  { name: t('nav.products'), href: href({ page: 'products' }, lang) },
+  { name: f.name[lang], href: href({ page: 'family', family }, lang) },
+];
+const anchor = (key: string | null) => key ?? 'range';
+---
+
+<Base lang={lang} title={title} description={`${f.intro[lang].split('. ')[0]}.`} alternates={alternates} image={f.image} jsonLd={[webPage('CollectionPage', f.name[lang], f.intro[lang], crumbs[2].href, lang), breadcrumb(crumbs), productList(list, lang)]}>
+  <PageHead lang={lang} crumbs={crumbs} eyebrow={familyCount[lang](list.length)} title={f.name[lang]} lead={f.intro[lang]}>
+    <div class="chips">
+      {alloyNames.map((a) => <span class="chip">{a}</span>)}
+      {pnRange && <span class="chip chip--bronze">{pnRange}</span>}
+    </div>
+    {groups.length > 1 && (
+      <nav class="subnav" aria-label={f.name[lang]}>
+        {groups.map((g) => g.key && <a href={`#${anchor(g.key)}`}>{subcategoryName(g.key, lang)} <span>{g.products.length}</span></a>)}
+      </nav>
+    )}
+  </PageHead>
+
+  {groups.map((g, i) => (
+    <section class:list={['section--tight', { 'section--mist': i % 2 === 1 }]} id={anchor(g.key)}>
+      <div class="container">
+        {g.key && groups.length > 1 && <h2 class="group-title">{subcategoryName(g.key, lang)}</h2>}
+        <div class="grid grid-4">
+          {g.products.map((p) => <ProductCard product={p} lang={lang} />)}
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <section class="section--tight other">
+    <div class="container">
+      <h2 class="group-title">{t('nav.allProducts')}</h2>
+      <ul class="other__list">
+        {families.filter((x) => x.key !== family).map((x) => <li><a href={href({ page: 'family', family: x.key }, lang)}>{x.name[lang]}</a></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} subject={`${t('product.quoteSubject')} – ${f.name[lang]}`} />
+</Base>
+
+<style>
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .subnav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .subnav a { display: inline-flex; gap: 8px; align-items: center; padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--ink); text-decoration: none; font-size: 0.88rem; font-weight: 500; }
+  .subnav a:hover { border-color: var(--ink); }
+  .subnav span { color: var(--slate); font-size: 0.8rem; }
+  .group-title { font-size: clamp(1.5rem, 2.4vw, 2rem); margin-bottom: 24px; }
+  .other { border-top: 1px solid var(--line); }
+  .other__list { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px 10px; }
+  .other__list a { display: inline-block; padding: 8px 14px; background: var(--mist); border-radius: 999px; color: var(--ink); text-decoration: none; font-size: 0.9rem; }
+  .other__list a:hover { background: var(--bronze-tint); color: var(--bronze-ink); }
+</style>

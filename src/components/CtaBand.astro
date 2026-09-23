@@ -1,0 +1,34 @@
+---
+import type { Locale } from '../i18n/config';
+import { href } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+import { site } from '../data/site';
+
+interface Props { lang: Locale; title?: string; text?: string; subject?: string }
+const { lang, title, text, subject } = Astro.props;
+const t = useT(lang);
+const mail = `mailto:${site.emails.sales}${subject ? `?subject=${encodeURIComponent(subject)}` : ''}`;
+---
+
+<section class="cta no-print">
+  <div class="container cta__inner">
+    <div>
+      <h2>{title ?? t('cta.quote')}</h2>
+      <p>{text ?? t('product.custom')}</p>
+    </div>
+    <div class="btn-row">
+      <a class="btn btn--light" href={mail}>{t('cta.quote')}</a>
+      <a class="btn cta__ghost" href={href({ page: 'contact' }, lang)}>{t('nav.contact')}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta { background: var(--night-2); color: var(--on-night); position: relative; overflow: hidden; }
+  .cta::before { content: ''; position: absolute; inset: auto -10% -60% auto; width: 520px; height: 520px; border-radius: 50%; background: radial-gradient(circle, rgb(200 112 42 / 0.35), transparent 65%); pointer-events: none; }
+  .cta__inner { position: relative; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px 48px; padding-block: clamp(44px, 6vw, 72px); }
+  .cta h2 { color: #fff; margin-bottom: 0.3em; }
+  .cta p { margin: 0; max-width: 60ch; color: var(--on-night); }
+  .cta__ghost { color: #fff; border-color: #3a3e47; }
+  .cta__ghost:hover { border-color: #fff; color: #fff; }
+</style>

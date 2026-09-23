@@ -1,0 +1,56 @@
+---
+/**
+ * One route file generates every page in every language, so that URLs can be
+ * localised (see src/i18n/routes.ts) while page templates are shared.
+ */
+import type { GetStaticPaths } from 'astro';
+import { locales, type Locale } from '../i18n/config';
+import { alternates, slugParam, type Route } from '../i18n/routes';
+import { allRoutes } from '../lib/all-routes';
+
+import Home from '../views/Home.astro';
+import Products from '../views/Products.astro';
+import Family from '../views/Family.astro';
+import ProductPage from '../views/Product.astro';
+import Company from '../views/Company.astro';
+import History from '../views/History.astro';
+import Production from '../views/Production.astro';
+import Certifications from '../views/Certifications.astro';
+import Environment from '../views/Environment.astro';
+import Applications from '../views/Applications.astro';
+import Custom from '../views/Custom.astro';
+import Alubronze from '../views/Alubronze.astro';
+import Literature from '../views/Literature.astro';
+import News from '../views/News.astro';
+import Contact from '../views/Contact.astro';
+import Privacy from '../views/Privacy.astro';
+
+export const getStaticPaths = (() => {
+  const routes = allRoutes();
+  return locales.flatMap((lang) =>
+    routes.map((route) => ({ params: { slug: slugParam(route, lang) }, props: { lang, route } })),
+  );
+}) satisfies GetStaticPaths;
+
+interface Props { lang: Locale; route: Route }
+const { lang, route } = Astro.props;
+const alts = alternates(route);
+const common = { lang, alternates: alts };
+---
+
+{route.page === 'home' && <Home {...common} />}
+{route.page === 'products' && <Products {...common} />}
+{route.page === 'family' && <Family {...common} family={route.family} />}
+{route.page === 'product' && <ProductPage {...common} code={route.code} />}
+{route.page === 'company' && <Company {...common} />}
+{route.page === 'history' && <History {...common} />}
+{route.page === 'production' && <Production {...common} />}
+{route.page === 'certifications' && <Certifications {...common} />}
+{route.page === 'environment' && <Environment {...common} />}
+{route.page === 'applications' && <Applications {...common} />}
+{route.page === 'custom' && <Custom {...common} />}
+{route.page === 'alubronze' && <Alubronze {...common} />}
+{route.page === 'literature' && <Literature {...common} />}
+{route.page === 'news' && <News {...common} />}
+{route.page === 'contact' && <Contact {...common} />}
+{route.page === 'privacy' && <Privacy {...common} />}

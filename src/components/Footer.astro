@@ -1,0 +1,94 @@
+---
+import type { Locale } from '../i18n/config';
+import { locales, localeMeta } from '../i18n/config';
+import { href } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+import { families } from '../data/families';
+import { site } from '../data/site';
+
+interface Props {
+  lang: Locale;
+  alternates: { lang: Locale; href: string }[];
+}
+const { lang, alternates } = Astro.props;
+const t = useT(lang);
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="top">
+      <div class="brand">
+        <p class="wordmark">CONTI</p>
+        <p class="tagline">{t('footer.tagline')}</p>
+        <address>
+          {site.name}<br />
+          {site.address.street}<br />
+          {site.address.postalCode} {site.address.city} ({site.address.province}), {site.address.countryName}
+        </address>
+        <p class="contacts">
+          <a href={site.phoneHref}>{site.phone}</a><br />
+          <a href={`mailto:${site.emails.general}`}>{site.emails.general}</a>
+        </p>
+      </div>
+
+      <nav aria-label={t('nav.products')}>
+        <h2>{t('nav.products')}</h2>
+        <ul class="cols">
+          {families.map((f) => <li><a href={href({ page: 'family', family: f.key }, lang)}>{f.name[lang]}</a></li>)}
+        </ul>
+      </nav>
+
+      <nav aria-label={t('nav.company')}>
+        <h2>{t('nav.company')}</h2>
+        <ul>
+          <li><a href={href({ page: 'company' }, lang)}>{t('nav.companyOverview')}</a></li>
+          <li><a href={href({ page: 'history' }, lang)}>{t('nav.history')}</a></li>
+          <li><a href={href({ page: 'production' }, lang)}>{t('nav.production')}</a></li>
+          <li><a href={href({ page: 'certifications' }, lang)}>{t('nav.certifications')}</a></li>
+          <li><a href={href({ page: 'environment' }, lang)}>{t('nav.environment')}</a></li>
+          <li><a href={href({ page: 'applications' }, lang)}>{t('nav.industries')}</a></li>
+          <li><a href={href({ page: 'custom' }, lang)}>{t('nav.custom')}</a></li>
+          <li><a href={href({ page: 'literature' }, lang)}>{t('nav.literature')}</a></li>
+          <li><a href={href({ page: 'news' }, lang)}>{t('nav.news')}</a></li>
+          <li><a href={href({ page: 'contact' }, lang)}>{t('nav.contact')}</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="bottom">
+      <p>
+        © {year} {site.legalName}{site.vatNumber && <> · {t('footer.vat')} {site.vatNumber}</>} · {t('footer.rights')}
+      </p>
+      <p class="links">
+        <a href={href({ page: 'privacy' }, lang)}>{t('nav.privacy')}</a>
+        <span class="langs" aria-label={t('nav.language')}>
+          {locales.map((l) => {
+            const a = alternates.find((x) => x.lang === l)!;
+            return <a href={a.href} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined} title={localeMeta[l].name}>{localeMeta[l].label}</a>;
+          })}
+        </span>
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer { background: var(--night); color: var(--on-night); padding-block: clamp(48px, 7vw, 88px) 28px; font-size: 0.93rem; }
+  .site-footer a { color: var(--on-night); text-decoration: none; }
+  .site-footer a:hover { color: #fff; text-decoration: underline; }
+  .top { display: grid; gap: 40px; grid-template-columns: 1fr; padding-bottom: 40px; border-bottom: 1px solid #262930; }
+  @media (min-width: 760px) { .top { grid-template-columns: 1.1fr 1.4fr 1fr; } }
+  .wordmark { font-family: var(--font-display); font-weight: 700; font-size: 2.6rem; letter-spacing: 0.06em; line-height: 1; color: #fff; margin: 0 0 4px; }
+  .tagline { color: var(--bronze-light); font-size: 0.85rem; letter-spacing: 0.12em; text-transform: uppercase; margin: 0 0 20px; }
+  address { font-style: normal; color: var(--on-night-dim); margin-bottom: 12px; }
+  h2 { font-family: var(--font-sans); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--on-night-dim); margin: 0 0 16px; }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .cols { grid-template-columns: 1fr 1fr; column-gap: 20px; }
+  .bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; padding-top: 24px; color: var(--on-night-dim); font-size: 0.82rem; }
+  .bottom p { margin: 0; }
+  .links { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; }
+  .langs { display: inline-flex; gap: 10px; }
+  .langs a { color: var(--on-night-dim); }
+  .langs a[aria-current] { color: var(--bronze-light); font-weight: 600; }
+</style>

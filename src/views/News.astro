@@ -1,0 +1,60 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Media from '../components/Media.astro';
+import type { Locale } from '../i18n/config';
+import { localeMeta } from '../i18n/config';
+import { href } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+import { news, newsPage } from '../content/misc';
+import { site } from '../data/site';
+import { breadcrumb, ORG_ID } from '../lib/schema';
+
+interface Props { lang: Locale; alternates: { lang: Locale; href: string }[] }
+const { lang, alternates } = Astro.props;
+const t = useT(lang);
+const c = newsPage[lang];
+const crumbs = [
+  { name: t('nav.home'), href: href({ page: 'home' }, lang) },
+  { name: c.heading, href: href({ page: 'news' }, lang) },
+];
+const fmt = new Intl.DateTimeFormat(localeMeta[lang].htmlLang, { day: 'numeric', month: 'long', year: 'numeric' });
+const articles = news.map((n, i) => ({
+  '@type': 'NewsArticle',
+  headline: n.title[lang],
+  datePublished: n.date,
+  articleBody: n.text[lang],
+  inLanguage: localeMeta[lang].htmlLang,
+  author: { '@id': ORG_ID },
+  publisher: { '@id': ORG_ID },
+  url: `${site.url}${crumbs[1].href}#news-${i + 1}`,
+}));
+---
+
+<Base lang={lang} title={c.title} description={c.description} alternates={alternates} jsonLd={[breadcrumb(crumbs), ...articles]}>
+  <PageHead lang={lang} crumbs={crumbs} title={c.heading} />
+
+  <section class="section">
+    <div class="container narrow">
+      {news.map((n, i) => (
+        <article class="news" id={`news-${i + 1}`}>
+          <div class="news__media"><Media src={n.image} alt={n.title[lang]} widths={[320, 480, 640]} sizes="(min-width: 700px) 260px, 100vw" /></div>
+          <div>
+            <time datetime={n.date} class="small muted">{fmt.format(new Date(n.date))}</time>
+            <h2>{n.title[lang]}</h2>
+            <p>{n.text[lang]}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .news { display: grid; gap: 20px 32px; padding-block: 32px; border-bottom: 1px solid var(--line); }
+  .news:first-child { padding-top: 0; }
+  @media (min-width: 700px) { .news { grid-template-columns: 260px 1fr; } }
+  .news__media { border-radius: var(--radius); overflow: hidden; aspect-ratio: 4 / 3; background: var(--mist); }
+  .news__media :global(img), .news__media :global(.ph) { width: 100%; height: 100%; object-fit: cover; }
+  .news h2 { font-size: clamp(1.5rem, 2.4vw, 2rem); margin: 6px 0 12px; }
+</style>

@@ -1,0 +1,77 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Media from '../components/Media.astro';
+import CtaBand from '../components/CtaBand.astro';
+import type { Locale } from '../i18n/config';
+import { href } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+import { company } from '../content/company';
+import { breadcrumb, webPage } from '../lib/schema';
+
+interface Props { lang: Locale; alternates: { lang: Locale; href: string }[] }
+const { lang, alternates } = Astro.props;
+const t = useT(lang);
+const c = company[lang];
+const crumbs = [
+  { name: t('nav.home'), href: href({ page: 'home' }, lang) },
+  { name: t('nav.company'), href: href({ page: 'company' }, lang) },
+];
+const explore = [
+  { page: 'history', label: t('nav.history'), image: '2018/11/1946.jpg' },
+  { page: 'production', label: t('nav.production'), image: '2018/11/produzione-header.jpg' },
+  { page: 'certifications', label: t('nav.certifications'), image: '2018/11/certificazioni-header.jpg' },
+  { page: 'environment', label: t('nav.environment'), image: '2018/11/rispetto-ambiente-header.jpg' },
+] as const;
+---
+
+<Base lang={lang} title={c.title} description={c.description} alternates={alternates} image="2018/12/mission-header.jpg" jsonLd={[webPage('AboutPage', c.heading, c.description, crumbs[1].href, lang), breadcrumb(crumbs)]}>
+  <PageHead lang={lang} crumbs={crumbs} eyebrow={t('nav.companyOverview')} title={c.heading} lead={c.lead} />
+
+  <section class="section">
+    <div class="container split">
+      <div>
+        <blockquote class="quote">
+          <p>“{c.quote}”</p>
+          <footer>— {c.quoteBy}</footer>
+        </blockquote>
+        <p class="lead">{c.mission}</p>
+      </div>
+      <div class="map">
+        <Media src="2018/12/world-map-conti.png" alt={c.facts[6][1]} widths={[480, 720, 1024]} sizes="(min-width: 900px) 45vw, 100vw" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mist">
+    <div class="container narrow">
+      <h2>{c.factsHeading}</h2>
+      <dl class="facts">
+        {c.facts.map(([k, v]) => (<><dt>{k}</dt><dd>{v}</dd></>))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2>{c.exploreHeading}</h2>
+      <div class="grid grid-4">
+        {explore.map((e) => (
+          <article class="card">
+            <div class="card__media card__media--cover"><Media src={e.image} alt={e.label} widths={[320, 480, 640]} sizes="(min-width: 1100px) 300px, 90vw" /></div>
+            <div class="card__body"><h3 class="card__title"><a class="stretched" href={href({ page: e.page }, lang)}>{e.label}</a></h3></div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>
+
+<style>
+  .quote { margin: 0 0 28px; padding-left: 24px; border-left: 3px solid var(--bronze); }
+  .quote p { font-family: var(--font-display); font-size: clamp(1.8rem, 3.2vw, 2.6rem); line-height: 1.1; margin: 0 0 8px; color: var(--ink); }
+  .quote footer { color: var(--slate); font-size: 0.95rem; }
+  .map :global(img) { width: 100%; height: auto; }
+</style>

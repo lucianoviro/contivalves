@@ -1,0 +1,66 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Media from '../components/Media.astro';
+import CtaBand from '../components/CtaBand.astro';
+import type { Locale } from '../i18n/config';
+import { href } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+import { custom } from '../content/applications';
+import { site } from '../data/site';
+import { breadcrumb, webPage } from '../lib/schema';
+
+interface Props { lang: Locale; alternates: { lang: Locale; href: string }[] }
+const { lang, alternates } = Astro.props;
+const t = useT(lang);
+const c = custom[lang];
+const crumbs = [
+  { name: t('nav.home'), href: href({ page: 'home' }, lang) },
+  { name: t('nav.applications'), href: href({ page: 'applications' }, lang) },
+  { name: t('nav.custom'), href: href({ page: 'custom' }, lang) },
+];
+const photos = ['2018/11/conti-soluzioni-personalizzate-1.jpg', '2018/11/conti-soluzioni-personalizzate-2.jpg', '2018/11/conti-soluzioni-personalizzate-3.jpg', '2018/11/conti-soluzioni-personalizzate-4.jpg'];
+const service = {
+  '@type': 'Service',
+  name: c.heading,
+  description: c.description,
+  provider: { '@id': `${site.url}/#organization` },
+  serviceType: 'Custom valve engineering',
+  areaServed: 'Worldwide',
+};
+---
+
+<Base lang={lang} title={c.title} description={c.description} alternates={alternates} image="2018/12/soluzioni-personalizzate.jpg" jsonLd={[webPage('WebPage', c.heading, c.description, crumbs[2].href, lang), breadcrumb(crumbs), service]}>
+  <PageHead lang={lang} crumbs={crumbs} eyebrow="Custom Engineered Solutions · 2006" title={c.heading} lead={c.lead} />
+
+  <section class="section">
+    <div class="container split">
+      <div class="prose">
+        {c.paragraphs.map((p) => <p>{p}</p>)}
+      </div>
+      <div class="options">
+        <h2>{c.optionsHeading}</h2>
+        <ul class="check-list">{c.options.map((o) => <li>{o}</li>)}</ul>
+        <a class="btn btn--primary" href={`mailto:${site.emails.technical}?subject=${encodeURIComponent(c.heading)}`}>{c.cta}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section--tight section--mist">
+    <div class="container photos">
+      {photos.map((p) => <div class="photo"><Media src={p} alt={c.heading} widths={[320, 480, 640]} sizes="(min-width: 900px) 25vw, 50vw" /></div>)}
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>
+
+<style>
+  .options { background: var(--mist); border-radius: var(--radius-lg); padding: clamp(24px, 3vw, 36px); }
+  .options h2 { font-size: 1.7rem; }
+  .options .check-list { margin-bottom: 24px; }
+  .photos { display: grid; gap: 16px; grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 900px) { .photos { grid-template-columns: repeat(4, 1fr); } }
+  .photo { border-radius: var(--radius); overflow: hidden; aspect-ratio: 1; background: var(--mist-2); }
+  .photo :global(img), .photo :global(.ph) { width: 100%; height: 100%; object-fit: cover; }
+</style>

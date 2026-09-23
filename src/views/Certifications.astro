@@ -1,0 +1,68 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Media from '../components/Media.astro';
+import CtaBand from '../components/CtaBand.astro';
+import type { Locale } from '../i18n/config';
+import { href } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+import { certifications, certificateImages } from '../content/production';
+import { breadcrumb, webPage } from '../lib/schema';
+import { getImage } from '../lib/media';
+
+interface Props { lang: Locale; alternates: { lang: Locale; href: string }[] }
+const { lang, alternates } = Astro.props;
+const t = useT(lang);
+const c = certifications[lang];
+const crumbs = [
+  { name: t('nav.home'), href: href({ page: 'home' }, lang) },
+  { name: t('nav.company'), href: href({ page: 'company' }, lang) },
+  { name: t('nav.certifications'), href: href({ page: 'certifications' }, lang) },
+];
+const gallery = certificateImages.map((g) => ({ ...g, full: getImage(g.image)?.src }));
+---
+
+<Base lang={lang} title={c.title} description={c.description} alternates={alternates} image="2023/10/ISO-9001.jpg" jsonLd={[webPage('WebPage', c.heading, c.description, crumbs[2].href, lang), breadcrumb(crumbs)]}>
+  <PageHead lang={lang} crumbs={crumbs} eyebrow={t('nav.certifications')} title={c.heading} lead={c.lead} />
+
+  <section class="section">
+    <div class="container grid grid-2">
+      {c.blocks.map((b, i) => (
+        <article class="block">
+          <span class="block__n">{String(i + 1).padStart(2, '0')}</span>
+          <h2>{b.title}</h2>
+          <p>{b.text}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section section--mist">
+    <div class="container">
+      <h2>{c.galleryHeading}</h2>
+      <div class="grid grid-4 gallery">
+        {gallery.map((g) => (
+          <figure class="card">
+            <a class="card__media card__media--cert" href={g.full ?? undefined} target="_blank" rel="noopener">
+              <Media src={g.image} alt={g.label} widths={[240, 360, 480]} sizes="(min-width: 1100px) 280px, 45vw" />
+            </a>
+            <figcaption class="card__body small">{g.label}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>
+
+<style>
+  .block { border-top: 2px solid var(--ink); padding-top: 20px; }
+  .block__n { font-family: var(--font-display); font-weight: 600; color: var(--bronze-ink); letter-spacing: 0.1em; }
+  .block h2 { font-size: clamp(1.5rem, 2.2vw, 1.9rem); margin-top: 6px; }
+  .block p { color: var(--slate-dark); }
+  .gallery { margin-top: 24px; }
+  .gallery figure { margin: 0; }
+  .card__media--cert { aspect-ratio: 3 / 4; background: #fff; }
+  .card__media--cert :global(img) { object-fit: contain; padding: 6%; mix-blend-mode: normal; }
+</style>

@@ -1,0 +1,88 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Media from '../components/Media.astro';
+import CtaBand from '../components/CtaBand.astro';
+import type { Locale } from '../i18n/config';
+import { href } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+import { documents, literature } from '../content/misc';
+import { familyByKey } from '../data/families';
+import { breadcrumb, webPage } from '../lib/schema';
+import { fileUrl, getImage } from '../lib/media';
+
+interface Props { lang: Locale; alternates: { lang: Locale; href: string }[] }
+const { lang, alternates } = Astro.props;
+const t = useT(lang);
+const c = literature[lang];
+const crumbs = [
+  { name: t('nav.home'), href: href({ page: 'home' }, lang) },
+  { name: t('nav.literature'), href: href({ page: 'literature' }, lang) },
+];
+// PDFs are served from /media/, scanned instruction sheets are optimised images (full size on click).
+const link = (file: string) => (file.endsWith('.pdf') ? fileUrl(file) : getImage(file)?.src);
+---
+
+<Base lang={lang} title={c.title} description={c.description} alternates={alternates} image="2018/12/documentazione-header.jpg" jsonLd={[webPage('CollectionPage', c.heading, c.description, crumbs[1].href, lang), breadcrumb(crumbs)]}>
+  <PageHead lang={lang} crumbs={crumbs} title={c.heading} lead={c.lead} />
+
+  <section class="section--tight">
+    <div class="container">
+      <h2>{c.catalogues}</h2>
+      <ul class="docs">
+        {documents.catalogues.map((d) => (
+          <li class="doc">
+            <span class="doc__icon" aria-hidden="true">PDF</span>
+            <span class="doc__name">{d.name[lang]}<small>{d.meta}</small></span>
+            {link(d.file) ? <a class="btn btn--ghost" href={link(d.file)} download>{t('cta.download')}</a> : <span class="muted small">—</span>}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section--tight section--mist">
+    <div class="container">
+      <h2>{c.manuals}</h2>
+      <div class="grid grid-3 manuals">
+        {documents.manuals.map((m) => (
+          <figure class="card">
+            <a class="card__media manual" href={link(m.file)} target="_blank" rel="noopener">
+              <Media src={m.file} alt={`${c.manuals} – ${familyByKey[m.family].name[lang]}`} widths={[300, 450]} sizes="(min-width: 900px) 30vw, 90vw" />
+            </a>
+            <figcaption class="card__body"><a class="card__title" href={href({ page: 'family', family: m.family }, lang)}>{familyByKey[m.family].name[lang]}</a></figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section--tight">
+    <div class="container">
+      <h2>{c.certificates}</h2>
+      <ul class="docs">
+        {documents.certificates.map((d) => (
+          <li class="doc">
+            <span class="doc__icon" aria-hidden="true">{d.meta}</span>
+            <span class="doc__name">{d.name}</span>
+            {link(d.file) ? <a class="btn btn--ghost" href={link(d.file)} target="_blank" rel="noopener">{t('cta.download')}</a> : <span class="muted small">—</span>}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>
+
+<style>
+  .docs { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .doc { display: flex; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .doc__icon { flex: none; display: grid; place-items: center; width: 48px; height: 56px; border-radius: 6px; background: var(--bronze-tint); color: var(--bronze-ink); font: 700 0.72rem var(--font-sans); letter-spacing: 0.06em; }
+  .doc__name { flex: 1; font-weight: 600; }
+  .doc__name small { display: block; font-weight: 400; color: var(--slate); }
+  .manuals figure { margin: 0; }
+  .manual { aspect-ratio: 3 / 4; background: #fff; }
+  .manual :global(img) { object-fit: contain; object-position: top; padding: 0; mix-blend-mode: normal; }
+  .manuals .card__title { text-decoration: none; font-size: 1.25rem; }
+</style>

@@ -1,0 +1,209 @@
+---
+import Base from '../layouts/Base.astro';
+import Media from '../components/Media.astro';
+import ProductCard from '../components/ProductCard.astro';
+import CtaBand from '../components/CtaBand.astro';
+import type { Locale } from '../i18n/config';
+import { href } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+import { familyByKey } from '../data/families';
+import { site } from '../data/site';
+import {
+  bodyMaterial, describe, materialName, partName, products, rowLabel, sizeRange, subcategoryName, tableHead, variantText,
+} from '../data/catalog';
+import { breadcrumb, productSchema } from '../lib/schema';
+import { fileUrl, getImage } from '../lib/media';
+import { getImage as optimise } from 'astro:assets';
+
+interface Props { lang: Locale; alternates: { lang: Locale; href: string }[]; code: string }
+const { lang, alternates, code } = Astro.props;
+const t = useT(lang);
+const p = products.find((x) => x.code === code)!;
+const f = familyByKey[p.family];
+const desc = describe(p, lang);
+const url = href({ page: 'product', family: p.family, code: p.code }, lang);
+const size = sizeRange(p);
+const body = bodyMaterial(p, lang);
+
+const crumbs = [
+  { name: t('nav.home'), href: href({ page: 'home' }, lang) },
+  { name: t('nav.products'), href: href({ page: 'products' }, lang) },
+  { name: f.name[lang], href: href({ page: 'family', family: p.family }, lang) },
+  { name: `${t('product.code')} ${p.code}`, href: url },
+];
+
+const specs: [string, string, string?][] = [
+  [t('product.code'), p.code],
+  [t('product.family'), f.name[lang], href({ page: 'family', family: p.family }, lang)],
+  ...(p.subcategory ? [[t('product.type'), subcategoryName(p.subcategory, lang)] as [string, string]] : []),
+  ...(p.rating ? [[t('product.rating'), p.rating] as [string, string]] : []),
+  ...(size ? [[t('product.sizes'), size] as [string, string]] : []),
+  ...(body ? [[t('product.bodyMaterial'), body] as [string, string]] : []),
+];
+
+const related = products.filter((x) => x.code !== p.code && x.family === p.family && x.subcategory === p.subcategory).slice(0, 4);
+const fill = related.length < 4 ? products.filter((x) => x.family === p.family && x.code !== p.code && !related.includes(x)).slice(0, 4 - related.length) : [];
+
+const subject = `${t('product.quoteSubject')} – ${t('product.code')} ${p.code}`;
+const datasheet = fileUrl(`datasheets/${p.code.replace(/\s+/g, '')}.pdf`);
+
+// Absolute image URLs for schema.org
+const imageUrls: string[] = [];
+for (const src of [p.image, p.drawing]) {
+  const img = getImage(src);
+  if (img) imageUrls.push(new URL((await optimise({ src: img, width: Math.min(1200, img.width), format: 'jpg' })).src, site.url).href);
+}
+const title = `${p.code} – ${desc} | Conti Valves`;
+const description = `${desc}. ${t('product.madeIn')}`;
+---
+
+<Base lang={lang} title={title} description={description} alternates={alternates} image={p.image} ogType="product" jsonLd={[breadcrumb(crumbs), productSchema(p, lang, imageUrls)]}>
+  <section class="product-head">
+    <div class="container">
+      <nav class="breadcrumb" aria-label={t('nav.breadcrumb')}>
+        <ol>{crumbs.map((c, i) => <li>{i < crumbs.length - 1 ? <a href={c.href}>{c.name}</a> : <span aria-current="page">{c.name}</span>}</li>)}</ol>
+      </nav>
+      <div class="product-grid">
+        <div class="product-media">
+          <Media src={p.image} alt={`${f.singular[lang]} Conti ${p.code}`} widths={[360, 540, 720, 960]} sizes="(min-width: 900px) 45vw, 100vw" loading="eager" fetchpriority="high" />
+        </div>
+        <div class="product-info">
+          <p class="code code--big">{t('product.code')} {p.code}</p>
+          <h1>{desc}</h1>
+          <dl class="facts">
+            {specs.map(([k, v, link]) => (<><dt>{k}</dt><dd>{link ? <a href={link}>{v}</a> : v}</dd></>))}
+          </dl>
+          <div class="btn-row no-print">
+            <a class="btn btn--primary" href={`mailto:${site.emails.sales}?subject=${encodeURIComponent(subject)}`}>{t('cta.quote')}</a>
+            {datasheet && <a class="btn btn--ghost" href={datasheet} download>{t('cta.datasheet')}</a>}
+            <button class="btn btn--ghost" type="button" onclick="window.print()">{t('cta.print')}</button>
+          </div>
+          <p class="made small muted">{t('product.madeIn')}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {p.dimensions.length > 0 && (
+    <section class="section--tight" id="dimensions">
+      <div class="container">
+        <h2>{t('product.dimensions')}</h2>
+        <p class="muted small">{t('product.dimensionsNote')}</p>
+        <div class="dims">
+          <div class="dims__tables">
+            {p.dimensions.map((d) => (
+              <div class="table-wrap">
+                <table class="table-dims">
+                  {d.head && <caption>{tableHead(d.head, lang)}</caption>}
+                  <thead>
+                    <tr>
+                      <th scope="col">{t('product.size')}</th>
+                      {d.rows.map((r) => <th scope="col">{rowLabel(r, lang)}</th>)}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {d.sizes.map((s, i) => (
+                      <tr>
+                        <th scope="row">{s}</th>
+                        {d.rows.map((r) => <td>{r.values[i] || '–'}</td>)}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ))}
+          </div>
+          {p.drawing && (
+            <figure class="drawing">
+              <Media src={p.drawing} alt={`${t('product.drawing')} – ${p.code}`} widths={[360, 540, 720]} sizes="(min-width: 900px) 40vw, 100vw" />
+              <figcaption class="small muted">{t('product.drawing')} – {p.code}</figcaption>
+            </figure>
+          )}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section--tight section--mist">
+    <div class="container two-col">
+      {p.materials.length > 0 && (
+        <div>
+          <h2>{t('product.materials')}</h2>
+          <div class="table-wrap">
+            <table class="table-text">
+              <thead><tr><th scope="col">{t('product.part')}</th><th scope="col">{t('product.material')}</th><th scope="col">Standard</th></tr></thead>
+              <tbody>
+                {p.materials.map((m) => (
+                  <tr><th scope="row">{partName(m.part, lang)}</th><td>{materialName(m, lang)}</td><td>{m.standard ?? ''}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+      {p.variants.length > 0 && (
+        <div>
+          <h2>{t('product.variants')}</h2>
+          <div class="table-wrap">
+            <table class="table-text">
+              <thead><tr><th scope="col">{t('product.code')}</th><th scope="col">{t('product.variant')}</th><th scope="col">{t('product.rating')}</th></tr></thead>
+              <tbody>
+                {p.variants.map((v) => (
+                  <tr><th scope="row" class="code">{v.code}</th><td>{variantText(v.text, lang)}</td><td>{v.rating ?? ''}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  {related.length + fill.length > 0 && (
+    <section class="section--tight related">
+      <div class="container">
+        <div class="section-head">
+          <h2>{t('product.related')}</h2>
+          <a class="link-arrow" href={href({ page: 'family', family: p.family }, lang)}>{f.name[lang]}</a>
+        </div>
+        <div class="grid grid-4">
+          {[...related, ...fill].map((r) => <ProductCard product={r} lang={lang} />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <CtaBand lang={lang} subject={subject} />
+</Base>
+
+<style>
+  .product-head { padding-block: clamp(24px, 4vw, 48px) clamp(32px, 5vw, 64px); background: linear-gradient(180deg, var(--mist) 0%, var(--paper) 100%); border-bottom: 1px solid var(--line); }
+  .product-grid { display: grid; gap: clamp(24px, 4vw, 56px); align-items: start; }
+  @media (min-width: 900px) { .product-grid { grid-template-columns: 1fr 1fr; } }
+  .product-media { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); aspect-ratio: 1 / 1; display: grid; place-items: center; overflow: hidden; }
+  .product-media :global(img) { width: 100%; height: 100%; object-fit: contain; padding: 6%; }
+  .product-media :global(.ph) { height: 100%; }
+  .product-info h1 { font-size: clamp(1.9rem, 3.4vw, 2.8rem); margin-bottom: 24px; }
+  .code--big { font-size: 1.4rem; margin: 0 0 8px; }
+  .product-info .facts { margin-bottom: 24px; }
+  .made { margin-top: 16px; }
+
+  .dims { display: grid; gap: 24px; margin-top: 20px; align-items: start; }
+  @media (min-width: 960px) { .dims { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); } }
+  .dims__tables { display: grid; gap: 20px; min-width: 0; }
+  .drawing { margin: 0; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
+  .drawing :global(img) { width: 100%; height: auto; }
+  .drawing figcaption { margin-top: 8px; text-align: center; }
+
+  .two-col { display: grid; gap: 32px; }
+  @media (min-width: 960px) { .two-col { grid-template-columns: 1fr 1fr; } }
+  .two-col h2, .dims + h2, #dimensions h2 { font-size: clamp(1.5rem, 2.4vw, 2rem); }
+  .related { border-top: 1px solid var(--line); }
+
+  @media print {
+    .product-grid { grid-template-columns: 0.8fr 1.2fr; }
+    .product-media { border: 0; }
+    .dims { grid-template-columns: 1.4fr 1fr; }
+    .two-col { grid-template-columns: 1fr 1fr; }
+  }
+</style>

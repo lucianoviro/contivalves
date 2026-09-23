@@ -1,0 +1,18 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# downloaded media (see scripts/fetch-media.mjs) – commit them if you prefer a self-contained repo
+# src/assets/media/
+# public/media/
+
+# never commit the WordPress export (contains user accounts)
+*.WordPress.*.xml
+
+# misc
+.DS_Store
+npm-debug.log*
+.env*

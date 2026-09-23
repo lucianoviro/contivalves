@@ -1,0 +1,74 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource/barlow-condensed/600.css';
+import '@fontsource/barlow-condensed/700.css';
+import '../styles/global.css';
+
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { defaultLocale, localeMeta, type Locale } from '../i18n/config';
+import { site } from '../data/site';
+import { organization, website } from '../lib/schema';
+import { getImage } from '../lib/media';
+import { getImage as optimise } from 'astro:assets';
+
+interface Props {
+  lang: Locale;
+  title: string;
+  description: string;
+  alternates: { lang: Locale; href: string }[];
+  /** Image path from the old site (see src/lib/media.ts) used for social sharing. */
+  image?: string | null;
+  jsonLd?: object[];
+  noindex?: boolean;
+  ogType?: 'website' | 'article' | 'product';
+}
+
+const { lang, title, description, alternates, image, jsonLd = [], noindex = false, ogType = 'website' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const xDefault = alternates.find((a) => a.lang === defaultLocale)?.href;
+
+const shareSource = getImage(image) ?? getImage('2019/01/conti-rubinetterie-valves-solutions.jpg');
+const share = shareSource ? await optimise({ src: shareSource, width: 1200, format: 'jpg' }) : undefined;
+const shareUrl = share ? new URL(share.src, site.url).href : new URL('/logo-conti.png', site.url).href;
+
+const graph = { '@context': 'https://schema.org', '@graph': [organization(), website(lang), ...jsonLd] };
+---
+
+<!doctype html>
+<html lang={localeMeta[lang].htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {!noindex && alternates.map((a) => <link rel="alternate" hreflang={localeMeta[a.lang].htmlLang} href={new URL(a.href, site.url).href} />)}
+    {!noindex && xDefault && <link rel="alternate" hreflang="x-default" href={new URL(xDefault, site.url).href} />}
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={site.brand} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={localeMeta[lang].og} />
+    {alternates.filter((a) => a.lang !== lang).map((a) => <meta property="og:locale:alternate" content={localeMeta[a.lang].og} />)}
+    <meta property="og:image" content={shareUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="sitemap" href="/sitemap.xml" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(graph)} />
+  </head>
+  <body>
+    <Header lang={lang} alternates={alternates} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer lang={lang} alternates={alternates} />
+  </body>
+</html>

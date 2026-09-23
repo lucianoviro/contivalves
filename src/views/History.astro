@@ -1,0 +1,64 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Media from '../components/Media.astro';
+import CtaBand from '../components/CtaBand.astro';
+import type { Locale } from '../i18n/config';
+import { href } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+import { historyPage, milestones } from '../content/company';
+import { breadcrumb, webPage } from '../lib/schema';
+
+interface Props { lang: Locale; alternates: { lang: Locale; href: string }[] }
+const { lang, alternates } = Astro.props;
+const t = useT(lang);
+const c = historyPage[lang];
+const crumbs = [
+  { name: t('nav.home'), href: href({ page: 'home' }, lang) },
+  { name: t('nav.company'), href: href({ page: 'company' }, lang) },
+  { name: t('nav.history'), href: href({ page: 'history' }, lang) },
+];
+---
+
+<Base lang={lang} title={c.title} description={c.description} alternates={alternates} image="2018/11/giovanni_conti.jpg" jsonLd={[webPage('AboutPage', c.heading, c.description, crumbs[2].href, lang), breadcrumb(crumbs)]}>
+  <PageHead lang={lang} crumbs={crumbs} eyebrow="1919 – 2019" title={c.heading} lead={c.lead}>
+    <p class="intro">{c.text}</p>
+  </PageHead>
+
+  <section class="section">
+    <div class="container">
+      <ol class="timeline">
+        {milestones.map((m) => (
+          <li class="milestone">
+            <div class="milestone__year">{m.year}</div>
+            <div class="milestone__body">
+              <p>{m.text[lang]}</p>
+            </div>
+            {m.image && (
+              <div class="milestone__media">
+                <Media src={m.image} alt={`${m.year} – ${m.text[lang]}`} widths={[280, 420, 560]} sizes="(min-width: 900px) 280px, 90vw" />
+              </div>
+            )}
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>
+
+<style>
+  .intro { max-width: 70ch; color: var(--slate-dark); }
+  .timeline { list-style: none; margin: 0; padding: 0; position: relative; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(var(--bronze), var(--patina)); border-radius: 2px; }
+  .milestone { position: relative; display: grid; gap: 8px 28px; padding: 0 0 40px 40px; grid-template-columns: 1fr; }
+  .milestone::before { content: ''; position: absolute; left: 0; top: 10px; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 3px solid var(--bronze); }
+  @media (min-width: 800px) {
+    .milestone { grid-template-columns: 120px 1fr 260px; align-items: start; }
+  }
+  .milestone__year { font-family: var(--font-display); font-weight: 600; font-size: 2.2rem; line-height: 1; color: var(--bronze); }
+  .milestone__body p { margin: 4px 0 0; font-size: 1.05rem; }
+  .milestone__media { border-radius: var(--radius); overflow: hidden; background: var(--mist); max-width: 360px; }
+  .milestone__media :global(img) { width: 100%; height: auto; filter: grayscale(0.15); }
+</style>

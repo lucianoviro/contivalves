@@ -1,0 +1,37 @@
+---
+import Media from './Media.astro';
+import type { Locale } from '../i18n/config';
+import { href } from '../i18n/routes';
+import { describe, pn, sizeRange, type Product } from '../data/catalog';
+import { useT } from '../i18n/ui';
+
+interface Props { product: Product; lang: Locale; headingLevel?: 'h3' | 'h4' }
+const { product: p, lang, headingLevel = 'h3' } = Astro.props;
+const t = useT(lang);
+const url = href({ page: 'product', family: p.family, code: p.code }, lang);
+const Heading = headingLevel;
+const size = sizeRange(p);
+---
+
+<article class="card product-card">
+  <div class="card__media">
+    <Media src={p.image} alt={`${t('product.code')} ${p.code} – ${describe(p, lang)}`} widths={[240, 360, 480]} sizes="(min-width: 1100px) 280px, (min-width: 640px) 45vw, 90vw" />
+  </div>
+  <div class="card__body">
+    <span class="code">{t('product.code')} {p.code}</span>
+    <Heading class="product-card__title"><a class="stretched" href={url}>{describe(p, lang)}</a></Heading>
+    <div class="card__meta">
+      {pn(p) && <span class="chip chip--bronze">{pn(p)}</span>}
+      {size && <span class="chip">{size}</span>}
+      {p.variants.length > 0 && <span class="chip chip--patina">+{p.variants.length}</span>}
+    </div>
+  </div>
+</article>
+
+<style>
+  .product-card .card__media { aspect-ratio: 1 / 1; }
+  .product-card__title { font-family: var(--font-sans); font-size: 0.95rem; font-weight: 500; line-height: 1.4; margin: 0; color: var(--ink); }
+  .product-card__title a { color: inherit; text-decoration: none; }
+  .product-card:hover .product-card__title a { color: var(--bronze-ink); }
+  .code { font-size: 1.05rem; }
+</style>

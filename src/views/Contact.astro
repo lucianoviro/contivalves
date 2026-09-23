@@ -1,0 +1,70 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import type { Locale } from '../i18n/config';
+import { href } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+import { contactPage } from '../content/misc';
+import { site } from '../data/site';
+import { breadcrumb, webPage } from '../lib/schema';
+
+interface Props { lang: Locale; alternates: { lang: Locale; href: string }[] }
+const { lang, alternates } = Astro.props;
+const t = useT(lang);
+const c = contactPage[lang];
+const crumbs = [
+  { name: t('nav.home'), href: href({ page: 'home' }, lang) },
+  { name: t('nav.contact'), href: href({ page: 'contact' }, lang) },
+];
+const departments = [
+  { label: t('contact.sales'), email: site.emails.sales },
+  { label: t('contact.technical'), email: site.emails.technical },
+  { label: t('contact.accounting'), email: site.emails.accounting },
+  { label: t('contact.general'), email: site.emails.general },
+];
+---
+
+<Base lang={lang} title={c.title} description={c.description} alternates={alternates} jsonLd={[webPage('ContactPage', c.heading, c.description, crumbs[1].href, lang), breadcrumb(crumbs)]}>
+  <PageHead lang={lang} crumbs={crumbs} title={c.heading} lead={c.lead} />
+
+  <section class="section">
+    <div class="container contact">
+      <div>
+        <h2>{c.departments}</h2>
+        <ul class="depts">
+          {departments.map((d) => (
+            <li>
+              <span class="muted small">{d.label}</span>
+              <a href={`mailto:${d.email}`}>{d.email}</a>
+            </li>
+          ))}
+          <li>
+            <span class="muted small">{t('contact.phone')}</span>
+            <a href={site.phoneHref}>{site.phone}</a>
+          </li>
+        </ul>
+      </div>
+      <div class="visit">
+        <h2>{c.visit}</h2>
+        <address>
+          <strong>{site.name}</strong><br />
+          {site.address.street}<br />
+          {site.address.postalCode} {site.address.city} ({site.address.province})<br />
+          {site.address.region}, {site.address.countryName}
+        </address>
+        <a class="btn btn--primary" href={site.mapsUrl} target="_blank" rel="noopener">{t('contact.map')}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .contact { display: grid; gap: 40px; }
+  @media (min-width: 900px) { .contact { grid-template-columns: 1.3fr 1fr; } }
+  .depts { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .depts li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 16px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+  .depts a { font-size: clamp(1.05rem, 1.8vw, 1.3rem); font-weight: 600; color: var(--ink); text-decoration: none; word-break: break-all; }
+  .depts a:hover { color: var(--bronze-ink); text-decoration: underline; }
+  .visit { background: var(--mist); border-radius: var(--radius-lg); padding: clamp(24px, 3vw, 36px); align-self: start; }
+  address { font-style: normal; font-size: 1.1rem; line-height: 1.7; margin-bottom: 24px; }
+</style>

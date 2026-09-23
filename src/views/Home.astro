@@ -1,0 +1,175 @@
+---
+import Base from '../layouts/Base.astro';
+import Media from '../components/Media.astro';
+import FamilyCard from '../components/FamilyCard.astro';
+import CtaBand from '../components/CtaBand.astro';
+import type { Locale } from '../i18n/config';
+import { href } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+import { home } from '../content/home';
+import { families } from '../data/families';
+import { faqPage, familyList } from '../lib/schema';
+
+interface Props { lang: Locale; alternates: { lang: Locale; href: string }[] }
+const { lang, alternates } = Astro.props;
+const c = home[lang];
+const t = useT(lang);
+const pillars = [
+  { key: 'sun', title: c.environment.sun, text: c.environment.sunText, icon: 'M12 4V2m0 20v-2m8-8h2M2 12h2m13.66-5.66 1.41-1.41M4.93 19.07l1.41-1.41m0-11.32L4.93 4.93m14.14 14.14-1.41-1.41M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10z' },
+  { key: 'water', title: c.environment.water, text: c.environment.waterText, icon: 'M12 2.5s-6.5 7.2-6.5 12a6.5 6.5 0 0 0 13 0c0-4.8-6.5-12-6.5-12z' },
+  { key: 'air', title: c.environment.air, text: c.environment.airText, icon: 'M3 8h11a3 3 0 1 0-3-3M3 12h16a3 3 0 1 1-3 3M3 16h8' },
+];
+---
+
+<Base lang={lang} title={c.title} description={c.description} alternates={alternates} image="2019/01/conti-rubinetterie-valves-solutions.jpg" jsonLd={[familyList(lang), faqPage(c.faq)]}>
+  <section class="hero">
+    <div class="container hero__grid">
+      <div class="hero__text">
+        <p class="eyebrow">{c.eyebrow}</p>
+        <h1>{c.heading}</h1>
+        <p class="lead">{c.lead}</p>
+        <div class="btn-row">
+          <a class="btn btn--primary" href={href({ page: 'products' }, lang)}>{t('cta.viewRange')}</a>
+          <a class="btn btn--ghost" href={href({ page: 'contact' }, lang)}>{t('cta.contact')}</a>
+        </div>
+      </div>
+      <div class="hero__media">
+        <Media src="2019/01/conti-rubinetterie-valves-solutions.jpg" alt={c.heading} widths={[480, 720, 960, 1280]} sizes="(min-width: 900px) 50vw, 100vw" loading="eager" fetchpriority="high" />
+        <span class="hero__badge"><strong>1919</strong><span>Valduggia · Italy</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section--tight">
+    <div class="container">
+      <div class="stats">
+        {c.facts.map((f) => (
+          <div class="stat"><div class="stat__value">{f.value}</div><div class="stat__label">{f.label}</div></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">{t('nav.products')}</p>
+          <h2>{c.productsHeading}</h2>
+          <p>{c.productsText}</p>
+        </div>
+        <a class="link-arrow" href={href({ page: 'products' }, lang)}>{t('nav.allProducts')}</a>
+      </div>
+      <div class="grid grid-4">
+        {families.map((f) => <FamilyCard family={f} lang={lang} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mist">
+    <div class="container split">
+      <div>
+        <p class="eyebrow">{t('nav.certifications')}</p>
+        <h2>{c.quality.heading}</h2>
+        <p class="lead">{c.quality.text}</p>
+        <div class="btn-row">
+          <a class="link-arrow" href={href({ page: 'production' }, lang)}>{t('nav.production')}</a>
+          <a class="link-arrow" href={href({ page: 'certifications' }, lang)}>{t('nav.certifications')}</a>
+        </div>
+      </div>
+      <div class="frame">
+        <Media src="2018/12/conti-rubinetterie-qualita-garantita.jpg" alt={c.quality.heading} widths={[480, 614]} sizes="(min-width: 900px) 45vw, 100vw" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container split split--reverse">
+      <div>
+        <p class="eyebrow">{t('nav.applications')}</p>
+        <h2>{c.custom.heading}</h2>
+        <p class="lead">{c.custom.text}</p>
+        <div class="btn-row">
+          <a class="link-arrow" href={href({ page: 'custom' }, lang)}>{t('cta.discover')}</a>
+          <a class="link-arrow" href={href({ page: 'alubronze' }, lang)}>{t('nav.alubronze')}</a>
+        </div>
+      </div>
+      <div class="frame">
+        <Media src="2018/11/engineered-valve-solutions.jpg" alt={c.custom.heading} widths={[480, 720, 960]} sizes="(min-width: 900px) 45vw, 100vw" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--night env">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow eyebrow--night">{t('nav.environment')}</p>
+          <h2>{c.environment.heading}</h2>
+          <p>{c.environment.text}</p>
+        </div>
+        <a class="link-arrow link-arrow--night" href={href({ page: 'environment' }, lang)}>{t('cta.discover')}</a>
+      </div>
+      <div class="grid grid-3">
+        {pillars.map((p) => (
+          <div class="pillar">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d={p.icon} fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            <h3>{p.title}</h3>
+            <p>{p.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container narrow">
+      <p class="eyebrow">FAQ</p>
+      <h2>{c.faqHeading}</h2>
+      <div class="faq">
+        {c.faq.map((f) => (
+          <details>
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>
+
+<style>
+  .hero { padding-block: clamp(32px, 6vw, 88px) clamp(24px, 4vw, 56px); background: linear-gradient(180deg, var(--mist) 0%, var(--paper) 90%); overflow: hidden; }
+  .hero__grid { display: grid; gap: clamp(32px, 5vw, 64px); align-items: center; }
+  @media (min-width: 900px) { .hero__grid { grid-template-columns: 1.05fr 1fr; } }
+  @media (min-width: 900px) { .hero h1 { max-width: 14ch; } }
+  .hero h1 :global(em) { font-style: normal; color: var(--bronze); }
+  .hero .lead { margin-bottom: 1.8rem; }
+  .hero__media { position: relative; border-radius: 24px; overflow: hidden; aspect-ratio: 5 / 4; background: var(--mist-2); box-shadow: var(--shadow); }
+  .hero__media :global(img), .hero__media :global(.ph) { width: 100%; height: 100%; object-fit: cover; }
+  .hero__badge { position: absolute; left: 16px; bottom: 16px; display: grid; background: rgb(255 255 255 / 0.92); backdrop-filter: blur(6px); border-radius: 14px; padding: 10px 16px; line-height: 1.1; }
+  .hero__badge strong { font-family: var(--font-display); font-size: 1.8rem; color: var(--bronze); }
+  .hero__badge span { font-size: 0.78rem; color: var(--slate); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .frame { border-radius: 24px; overflow: hidden; background: var(--mist-2); aspect-ratio: 6 / 5; }
+  .frame :global(img), .frame :global(.ph) { width: 100%; height: 100%; object-fit: cover; }
+
+  .env .section-head p { color: var(--on-night-dim); }
+  .eyebrow--night { color: var(--on-night-dim); }
+  .link-arrow--night { color: #fff; }
+  .pillar { padding: 28px; border: 1px solid #262930; border-radius: var(--radius-lg); background: linear-gradient(160deg, #16181d, #0f1013); }
+  .pillar svg { width: 36px; height: 36px; color: var(--bronze-light); margin-bottom: 18px; }
+  .pillar h3 { color: #fff; }
+  .pillar p { color: var(--on-night); margin: 0; }
+  .pillar:nth-child(2) svg { color: #7cc4be; }
+
+  .faq { border-top: 1px solid var(--line); margin-top: 1.5rem; }
+  .faq details { border-bottom: 1px solid var(--line); }
+  .faq summary { cursor: pointer; list-style: none; padding: 20px 40px 20px 0; position: relative; font-weight: 600; font-size: 1.05rem; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: '+'; position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; font-weight: 300; color: var(--bronze); }
+  .faq details[open] summary::after { content: '–'; }
+  .faq details p { color: var(--slate-dark); padding-right: 40px; }
+</style>
