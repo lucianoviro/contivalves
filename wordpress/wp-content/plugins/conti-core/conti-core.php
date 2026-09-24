@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Conti Core
  * Description:       Catalogo prodotti, blocchi "Conti" per l'editor, pagine multilingua, SEO/GEO (schema.org, sitemap con hreflang, llms.txt), redirect dal vecchio sito e importatore dei contenuti per contivalves.com. Richiede Polylang.
- * Version:           1.1.0
+ * Version:           1.1.1
  * Requires at least: 6.4
  * Requires PHP:      8.0
  * Author:            Conti Rubinetterie
@@ -11,7 +11,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CONTI_CORE_VERSION', '1.1.0' );
+define( 'CONTI_CORE_VERSION', '1.1.1' );
 define( 'CONTI_CORE_DIR', __DIR__ );
 define( 'CONTI_CORE_URL', plugin_dir_url( __FILE__ ) );
 

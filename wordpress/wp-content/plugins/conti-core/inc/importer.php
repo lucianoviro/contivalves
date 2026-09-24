@@ -55,7 +55,9 @@ function conti_import_page(): void {
 		const nonce = <?php echo wp_json_encode( wp_create_nonce( 'conti_import' ) ); ?>;
 		const write = (t) => { log.textContent += t + '\n'; log.scrollTop = log.scrollHeight; };
 		async function call(step, offset) {
-			const body = new URLSearchParams({ action: 'conti_import', step, offset, _ajax_nonce: nonce });
+			// pll_ajax_backend: Polylang treats AJAX calls as front end unless told otherwise, and on the
+			// front end it does not load at all while no language exists yet.
+			const body = new URLSearchParams({ action: 'conti_import', step, offset, _ajax_nonce: nonce, pll_ajax_backend: 1 });
 			const res = await fetch(ajaxurl, { method: 'POST', body });
 			const json = await res.json().catch(() => ({ success: false, data: 'Risposta non valida (timeout?). Riprova: l’importazione riprende da dove era arrivata.' }));
 			if (!json.success) throw new Error(json.data || 'Errore');
@@ -123,7 +125,7 @@ function conti_import_step( string $step, int $offset ): array {
 
 function conti_import_languages(): array {
 	if ( ! conti_has_polylang() ) {
-		throw new Exception( 'Polylang non è attivo.' );
+		throw new Exception( defined( 'POLYLANG_VERSION' ) ? 'Polylang è attivo ma non si è caricato per questa richiesta: ricarica la pagina (Ctrl+F5) e riprova.' : 'Polylang non è attivo.' );
 	}
 	$log      = array();
 	$existing = (array) pll_languages_list( array( 'fields' => 'slug' ) );
@@ -147,17 +149,38 @@ function conti_import_languages(): array {
 		$log[] = "Lingua creata: {$slug}";
 	}
 	// URL model: /it/…, default language (EN) without prefix, no browser redirect, media not translated.
-	$opts                  = (array) get_option( 'polylang', array() );
-	$opts['default_lang']  = 'en';
-	$opts['force_lang']    = 1;
-	$opts['hide_default']  = 1;
-	$opts['rewrite']       = 1;
-	$opts['browser']       = 0;
-	$opts['redirect_lang'] = 0;
-	$opts['media_support'] = 0;
-	$opts['post_types']    = array_values( array_unique( array_merge( (array) ( $opts['post_types'] ?? array() ), array( 'conti_product' ) ) ) );
-	$opts['taxonomies']    = array_values( array_unique( array_merge( (array) ( $opts['taxonomies'] ?? array() ), array( 'conti_family' ) ) ) );
-	update_option( 'polylang', $opts );
+	$wanted = array(
+		'default_lang'  => 'en',
+		'force_lang'    => 1,
+		'hide_default'  => true,
+		'rewrite'       => true,
+		'browser'       => false,
+		'redirect_lang' => false,
+		'media_support' => false,
+	);
+	$pll  = function_exists( 'PLL' ) ? PLL() : null;
+	$done = false;
+	if ( $pll && isset( $pll->options ) && $pll->options instanceof ArrayAccess ) {
+		// Polylang 3.7+: options object, saved by Polylang itself at the end of the request
+		// (writing the option directly would be overwritten by it).
+		try {
+			foreach ( $wanted as $key => $value ) {
+				$pll->options[ $key ] = $value;
+			}
+			foreach ( array( 'post_types' => 'conti_product', 'taxonomies' => 'conti_family' ) as $key => $value ) {
+				$pll->options[ $key ] = array_values( array_unique( array_merge( (array) $pll->options[ $key ], array( $value ) ) ) );
+			}
+			$done = true;
+		} catch ( Throwable $e ) {
+			$log[] = 'Nota: impostazioni URL di Polylang da verificare a mano (' . $e->getMessage() . ').';
+		}
+	}
+	if ( ! $done ) {
+		$opts               = array_merge( (array) get_option( 'polylang', array() ), array_map( 'intval', $wanted ), array( 'default_lang' => 'en' ) );
+		$opts['post_types'] = array_values( array_unique( array_merge( (array) ( $opts['post_types'] ?? array() ), array( 'conti_product' ) ) ) );
+		$opts['taxonomies'] = array_values( array_unique( array_merge( (array) ( $opts['taxonomies'] ?? array() ), array( 'conti_family' ) ) ) );
+		update_option( 'polylang', $opts );
+	}
 	$log[] = 'Lingue pronte: ' . implode( ', ', CONTI_LANG_ORDER ) . ' (EN senza prefisso).';
 	return $log;
 }
