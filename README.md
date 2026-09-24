@@ -3,7 +3,7 @@
 Nuovo sito di **Conti Rubinetterie** (Conti Valves): statico, multilingua (EN · IT · FR · ES · DE), costruito con [Astro](https://astro.build).
 Nessun CMS, database, cookie o script di terze parti: l'hosting è HTML puro su CDN.
 
-> **Versione WordPress**: lo stesso sito (design, testi, URL, SEO) come tema + plugin WordPress è in [`wordpress/`](wordpress/README.md).
+> **Versione WordPress**: lo stesso sito (design, testi, URL, SEO) come tema + plugin WordPress, con le pagine componibili nell’editor a blocchi, è in [`wordpress/`](wordpress/README.md).
 > I dati per WordPress si rigenerano con `npm run export:wp`, gli zip da caricare con `npm run wp:zip`.
 
 ## Comandi

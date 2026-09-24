@@ -1,0 +1,59 @@
+/* Conti blocks – editor only. The page itself is styled by the theme CSS (loaded as editor style). */
+
+/* Page-level blocks span the whole canvas, like on the site. */
+.editor-styles-wrapper .is-root-container > [data-type^="conti/"] { max-width: none; margin-top: 0; margin-bottom: 0; }
+/* Loose text blocks are shown as they appear on the site: a centred column of text. */
+.editor-styles-wrapper .is-root-container > :not([data-type^="conti/"]) { max-width: 70ch; margin-left: auto; margin-right: auto; }
+.editor-styles-wrapper .is-root-container { padding-bottom: 80px; }
+.editor-styles-wrapper .container > .block-list-appender, .editor-styles-wrapper .cbe-col > .block-list-appender { position: relative; margin-top: 8px; }
+
+/* Repeater items: move/delete tools, add button */
+.editor-styles-wrapper .cbe-item { position: relative; }
+.editor-styles-wrapper .cbe-tools { position: absolute; top: 6px; right: 6px; z-index: 20; display: flex; gap: 0; padding: 1px; background: #fff; border: 1px solid #1e1e1e; border-radius: 4px; box-shadow: 0 2px 6px rgb(0 0 0 / 0.15); line-height: 1; }
+.editor-styles-wrapper .cbe-tools .components-button { min-width: 28px; width: 28px; height: 28px; padding: 0; color: #1e1e1e; }
+.editor-styles-wrapper .cbe-tools .components-button.is-destructive { color: #cc1818; }
+.editor-styles-wrapper .cbe-item--inline > .cbe-tools, .editor-styles-wrapper dd.cbe-item > .cbe-tools, .editor-styles-wrapper .check-list .cbe-item > .cbe-tools { top: 50%; right: auto; left: 100%; transform: translate(6px, -50%); }
+.editor-styles-wrapper .cbe-item--inline > .cbe-tools { top: auto; bottom: 100%; left: 0; transform: translateY(-6px); }
+.editor-styles-wrapper .cbe-item--inline { position: relative; }
+.editor-styles-wrapper .cbe-add { display: inline-flex; margin: 18px 0 0; }
+.editor-styles-wrapper .btn-row + .cbe-add { margin-top: 12px; }
+.editor-styles-wrapper .cbe-empty { margin: 0; padding: 20px; border: 1px dashed #b3b7be; border-radius: 8px; color: #5f6571; font: 14px/1.4 -apple-system, system-ui, sans-serif; text-align: center; }
+.editor-styles-wrapper .cbe-note { display: none; margin: 0 0 10px; color: #5f6571; font: 12px/1.4 -apple-system, system-ui, sans-serif; }
+.editor-styles-wrapper .is-selected > .cbe-note { display: block; }
+
+/* Image pickers */
+.editor-styles-wrapper .cbe-media { position: relative; display: block; width: 100%; height: 100%; }
+.editor-styles-wrapper .cbe-media__pick { all: unset; box-sizing: border-box; display: block; width: 100%; height: 100%; cursor: pointer; }
+.editor-styles-wrapper .cbe-media__pick img { display: block; width: 100%; height: 100%; }
+.editor-styles-wrapper .frame .cbe-media__pick img, .editor-styles-wrapper .hero__media .cbe-media__pick img, .editor-styles-wrapper .photo .cbe-media__pick img, .editor-styles-wrapper .news__media .cbe-media__pick img, .editor-styles-wrapper .card__media--cover .cbe-media__pick img { object-fit: cover; }
+.editor-styles-wrapper .frame--auto .cbe-media__pick img, .editor-styles-wrapper .milestone__media .cbe-media__pick img { height: auto; }
+.editor-styles-wrapper .cbe-media__empty { display: grid; place-items: center; box-sizing: border-box; width: 100%; height: 100%; min-height: 120px; padding: 12px; background: repeating-linear-gradient(45deg, #f4f5f7 0 10px, #eceef1 10px 20px); border: 1px dashed #b3b7be; color: #5f6571; font: 600 13px/1.35 -apple-system, system-ui, sans-serif; text-align: center; }
+.editor-styles-wrapper .cbe-media__pick:hover .cbe-media__empty, .editor-styles-wrapper .cbe-media__pick:focus .cbe-media__empty { border-color: var(--wp-admin-theme-color, #3858e9); color: var(--wp-admin-theme-color, #3858e9); }
+.editor-styles-wrapper .cbe-media__pick:focus-visible { outline: 2px solid var(--wp-admin-theme-color, #3858e9); outline-offset: -2px; }
+.editor-styles-wrapper .cbe-media__remove { position: absolute; top: 6px; left: 6px; display: inline-flex; min-width: 28px; height: 28px; padding: 0; background: #fff; border: 1px solid #1e1e1e; border-radius: 4px; }
+.editor-styles-wrapper .certs .cbe-media__pick img { width: 100%; height: auto; }
+.editor-styles-wrapper .cbe-file { display: inline-flex; align-items: center; gap: 4px; }
+.editor-styles-wrapper .doc .cbe-file .components-button.is-secondary { max-width: 260px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+/* Blocks whose markup differs slightly in the editor */
+.editor-styles-wrapper .cbe-faq { border-bottom: 1px solid var(--line); padding: 18px 40px 14px 0; }
+.editor-styles-wrapper .cbe-faq__q { margin: 0 0 8px; font-weight: 600; font-size: 1.05rem; }
+.editor-styles-wrapper .cbe-faq__a { margin: 0; color: var(--slate-dark); }
+.editor-styles-wrapper .cbe-icon { display: block; }
+.editor-styles-wrapper .yt__btn { cursor: default; }
+.editor-styles-wrapper .cbe-ssr a { pointer-events: none; }
+.editor-styles-wrapper .cbe-ssr .components-placeholder { min-height: 120px; }
+.editor-styles-wrapper .options .btn, .editor-styles-wrapper .checklist .btn { margin-top: 24px; }
+.editor-styles-wrapper .options .cbe-add + .btn { display: flex; width: max-content; }
+/* Hidden headings (for Google and screen readers) stay visible, faded, in the editor. */
+.editor-styles-wrapper .visually-hidden { position: static !important; width: auto; height: auto; margin: 0 0 12px; clip: auto; overflow: visible; white-space: normal; opacity: 0.45; font-size: 1.1rem; }
+.editor-styles-wrapper .visually-hidden::before { content: 'Titolo nascosto (letto da Google e dagli screen reader) – '; font: 12px -apple-system, system-ui, sans-serif; }
+/* Placeholder text of empty fields */
+.editor-styles-wrapper .section--night [data-rich-text-placeholder]::after { color: #8b9099; }
+
+/* Sidebar */
+.cbe-panel-item { padding: 10px 0 14px; border-top: 1px solid #e0e0e0; }
+.cbe-panel-item:first-child { border-top: 0; padding-top: 0; }
+.cbe-panel-item__title { margin: 0 0 8px; font-weight: 600; }
+.cbe-panel-item .components-base-control + .components-base-control, .cbe-panel-item .cbe-file { margin-top: 10px; }
+.cbe-muted { color: #757575; }

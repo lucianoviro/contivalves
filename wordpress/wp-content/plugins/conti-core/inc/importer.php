@@ -332,6 +332,7 @@ function conti_import_terms(): array {
 /* ── Pages ─────────────────────────────────────────────────────────────── */
 
 function conti_import_pages(): array {
+	kses_remove_filters(); // our own block markup: store it as is, also from WP-CLI
 	$pages   = conti_data( 'pages' );
 	$map     = conti_page_map();
 	$default = conti_default_lang();
@@ -357,7 +358,7 @@ function conti_import_pages(): array {
 				'post_title'   => $title,
 				'post_name'    => $slug,
 				'post_parent'  => $parent,
-				'post_content' => '',
+				'post_content' => conti_serialize_blocks( conti_import_media_ids( $def['blocks'][ $lang ] ) ),
 			);
 			$id = wp_insert_post( wp_slash( $postarr ), true );
 			if ( is_wp_error( $id ) ) {
@@ -367,7 +368,7 @@ function conti_import_pages(): array {
 				pll_set_post_language( $id, $lang );
 			}
 			update_post_meta( $id, '_conti_page', $key );
-			update_post_meta( $id, '_conti_fields', wp_slash( wp_json_encode( conti_import_media_ids( $def['fields'][ $lang ] ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) ) );
+			delete_post_meta( $id, '_conti_fields' ); // texts of version 1.0, now in the blocks
 			update_post_meta( $id, '_conti_seo', wp_slash( wp_json_encode( $def['seo'][ $lang ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) ) );
 			$ids[ $lang ] = $id;
 			if ( $lang === $default ) {

@@ -1,7 +1,7 @@
 <?php
 /**
- * Admin editing: page texts (structured editor on a JSON field), product technical data,
- * family descriptions. The layout stays in the theme; editors only change content.
+ * Admin editing: SEO box of the pages, product technical data, family descriptions.
+ * Page contents are edited in the block editor (inc/blocks.php).
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -21,49 +21,32 @@ add_action(
 
 /* ── Pages ──────────────────────────────────────────────────────────────── */
 
+// Pages are composed in the block editor with the "Conti" blocks (see inc/blocks.php);
+// the SEO box stays below the content.
 add_action(
 	'add_meta_boxes_page',
-	function ( $post ) {
-		if ( ! conti_page_key( $post->ID ) ) {
-			return;
-		}
-		remove_post_type_support( 'page', 'editor' );
-		add_meta_box( 'conti-fields', 'Contenuti della pagina', 'conti_box_page_fields', 'page', 'normal', 'high' );
+	function () {
 		add_meta_box( 'conti-seo', 'SEO (Google e condivisioni)', 'conti_box_seo', 'page', 'normal', 'default' );
 	}
 );
 
-// The layout of Conti pages is fixed: hide the block editor for them.
+// Products keep the classic screen with the technical data form.
 add_filter(
 	'use_block_editor_for_post',
-	fn( $use, $post ) => ( $post && ( 'conti_product' === $post->post_type || conti_page_key( $post->ID ) ) ) ? false : $use,
+	fn( $use, $post ) => ( $post && 'conti_product' === $post->post_type ) ? false : $use,
 	10,
 	2
 );
-add_action(
-	'current_screen',
-	function ( $screen ) {
-		if ( 'post' === $screen->base && 'page' === $screen->post_type && isset( $_GET['post'] ) && conti_page_key( (int) $_GET['post'] ) ) {
-			remove_post_type_support( 'page', 'editor' );
-		}
-	}
-);
-
-function conti_box_page_fields( $post ): void {
-	wp_nonce_field( 'conti_save_' . $post->ID, 'conti_nonce' );
-	$json = wp_json_encode( conti_fields( $post->ID ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
-	echo '<p class="description">Modifica i testi e le immagini della pagina. L’impaginazione è fissa nel tema, quindi l’aspetto resta coerente. Pagina: <code>' . esc_html( conti_page_key( $post->ID ) ) . '</code> · lingua: <strong>' . esc_html( strtoupper( conti_post_lang( $post->ID ) ) ) . '</strong></p>';
-	echo '<div class="conti-json" data-root="page"><textarea name="conti_fields" class="conti-json__data" hidden>' . esc_textarea( $json ) . '</textarea><div class="conti-json__ui"></div></div>';
-}
 
 function conti_box_seo( $post ): void {
+	wp_nonce_field( 'conti_save_' . $post->ID, 'conti_nonce' );
 	$seo = conti_seo( $post->ID );
 	?>
 	<p><label><strong>Titolo per Google</strong> <span class="conti-count" data-for="conti_seo_title"></span><br>
 	<input type="text" class="widefat" id="conti_seo_title" name="conti_seo[title]" value="<?php echo esc_attr( $seo['title'] ?? '' ); ?>"></label></p>
 	<p><label><strong>Descrizione per Google</strong> <span class="conti-count" data-for="conti_seo_description"></span><br>
 	<textarea class="widefat" rows="3" id="conti_seo_description" name="conti_seo[description]"><?php echo esc_textarea( $seo['description'] ?? '' ); ?></textarea></label></p>
-	<p class="description">Consigliato: titolo fino a ~60 caratteri, descrizione 120–160.</p>
+	<p class="description">Consigliato: titolo fino a ~60 caratteri, descrizione 120–160. Se vuoti, si usano il titolo e il primo testo della pagina.</p>
 	<?php
 }
 
@@ -72,12 +55,6 @@ add_action(
 	function ( $post_id ) {
 		if ( ! conti_can_save( $post_id ) ) {
 			return;
-		}
-		if ( isset( $_POST['conti_fields'] ) ) {
-			$data = json_decode( wp_unslash( $_POST['conti_fields'] ), true );
-			if ( is_array( $data ) ) {
-				update_post_meta( $post_id, '_conti_fields', wp_slash( wp_json_encode( conti_clean_tree( $data ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) ) );
-			}
 		}
 		if ( isset( $_POST['conti_seo'] ) && is_array( $_POST['conti_seo'] ) ) {
 			$seo = array_map( 'sanitize_text_field', wp_unslash( $_POST['conti_seo'] ) );

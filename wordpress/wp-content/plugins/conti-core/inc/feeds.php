@@ -92,16 +92,14 @@ function conti_llms(): string {
 	$en   = conti_default_lang();
 	$site = conti_site();
 	$home = conti_page_id( 'home', $en );
-	$comp = conti_fields( conti_page_id( 'company', $en ) );
-	$hf   = conti_fields( $home );
 	$lines = array(
 		"# {$site['name']} ({$site['brand']})",
 		'',
 		'> ' . ( conti_seo( $home )['description'] ?? '' ),
 		'',
 	);
-	foreach ( (array) ( $comp['facts'] ?? array() ) as $fact ) {
-		$lines[] = "- {$fact[0]}: {$fact[1]}";
+	foreach ( conti_block_items( conti_page_id( 'company', $en ), 'conti/facts' ) as $fact ) {
+		$lines[] = '- ' . conti_plain( $fact['term'] ?? '' ) . ': ' . conti_plain( $fact['value'] ?? '' );
 	}
 	$lines[] = "- Phone: {$site['phone']}";
 	$lines[] = "- Sales: {$site['emails']['sales']} · Technical department: {$site['emails']['technical']} · General: {$site['emails']['general']}";
@@ -115,10 +113,11 @@ function conti_llms(): string {
 	foreach ( array( 'company', 'history', 'production', 'certifications', 'environment', 'applications', 'custom', 'alubronze', 'contact' ) as $key ) {
 		$lines[] = sprintf( '- [%s](%s)', conti_t( CONTI_PAGE_NAV[ $key ], $en ), conti_page_url( $key, $en ) );
 	}
-	if ( ! empty( $hf['faq'] ) ) {
+	$faq = conti_block_items( $home, 'conti/faq' );
+	if ( $faq ) {
 		array_push( $lines, '', '## FAQ', '' );
-		foreach ( $hf['faq'] as $f ) {
-			array_push( $lines, "### {$f['q']}", '', $f['a'], '' );
+		foreach ( $faq as $f ) {
+			array_push( $lines, '### ' . conti_plain( $f['q'] ?? '' ), '', conti_plain( $f['a'] ?? '' ), '' );
 		}
 	}
 	array_push( $lines, '## Optional', '', '- [Full product catalogue in plain text](' . home_url( '/llms-full.txt' ) . '): every item with pressure rating, sizes, materials and versions.', '' );

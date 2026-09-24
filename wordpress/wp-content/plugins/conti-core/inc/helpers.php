@@ -37,8 +37,17 @@ function conti_default_lang(): string {
 }
 
 function conti_lang(): string {
+	// Block previews in the editor: the language of the page being edited.
+	if ( conti_is_block_preview() ) {
+		return conti_post_lang( (int) $_GET['post_id'] ); // phpcs:ignore WordPress.Security.NonceVerification
+	}
 	$l = function_exists( 'pll_current_language' ) ? pll_current_language() : '';
 	return $l ?: conti_default_lang();
+}
+
+/** True while the block editor asks the server for a block preview (REST block renderer). */
+function conti_is_block_preview(): bool {
+	return defined( 'REST_REQUEST' ) && REST_REQUEST && ! empty( $_GET['post_id'] ) && str_contains( (string) ( $_SERVER['REQUEST_URI'] ?? '' ), 'block-renderer' ); // phpcs:ignore
 }
 
 function conti_post_lang( $post_id ): string {
@@ -163,14 +172,6 @@ function conti_page_url( string $key, ?string $lang = null ): string {
 	}
 	$id = conti_page_id( $key, $lang );
 	return $id ? get_permalink( $id ) : conti_home_url( $lang );
-}
-
-/** On-page fields of a page (JSON edited in the "Contenuti pagina" box). */
-function conti_fields( $post_id = null ): array {
-	$post_id = $post_id ?: get_queried_object_id();
-	$raw     = get_post_meta( $post_id, '_conti_fields', true );
-	$data    = is_string( $raw ) ? json_decode( $raw, true ) : $raw;
-	return is_array( $data ) ? $data : array();
 }
 
 /** SEO title/description of a post. */

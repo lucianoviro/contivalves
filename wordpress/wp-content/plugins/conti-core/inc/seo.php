@@ -117,7 +117,7 @@ function conti_meta(): array {
 			$seo = conti_seo( $ctx['id'] );
 			return array(
 				'title'       => $seo['title'] ?? get_the_title( $ctx['id'] ) . ' | Conti Valves',
-				'description' => $seo['description'] ?? '',
+				'description' => $seo['description'] ?? conti_page_summary( $ctx['id'] ),
 			);
 		case 'product':
 			$p = conti_product( $ctx['id'] );
@@ -230,12 +230,10 @@ function conti_share_image(): string {
 	} elseif ( 'family' === $ctx['type'] ) {
 		$value = conti_family_meta( $ctx['key'], 'image' );
 	} elseif ( in_array( $ctx['type'], array( 'home', 'page' ), true ) ) {
-		$f     = conti_fields( $ctx['id'] );
-		$value = $f['images']['hero'] ?? $f['image'] ?? 0;
+		$value = conti_first_block_image( $ctx['id'] );
 	}
 	if ( ! conti_attachment_id( $value ) ) {
-		$home  = conti_fields( conti_page_id( 'home', conti_default_lang() ) );
-		$value = $home['images']['hero'] ?? 0;
+		$value = conti_first_block_image( conti_page_id( 'home', conti_default_lang() ) );
 	}
 	return conti_image_url( $value, 'conti-wide' );
 }
@@ -285,14 +283,7 @@ function conti_schema_graph(): array {
 
 	switch ( $ctx['type'] ) {
 		case 'home':
-			$f       = conti_fields( $ctx['id'] );
 			$graph[] = conti_schema_family_list( $lang );
-			if ( ! empty( $f['faq'] ) ) {
-				$graph[] = array(
-					'@type'      => 'FAQPage',
-					'mainEntity' => array_map( fn( $q ) => array( '@type' => 'Question', 'name' => $q['q'], 'acceptedAnswer' => array( '@type' => 'Answer', 'text' => $q['a'] ) ), $f['faq'] ),
-				);
-			}
 			break;
 		case 'family':
 			$graph[] = $web_page( 'CollectionPage' );
@@ -303,7 +294,6 @@ function conti_schema_graph(): array {
 			break;
 		case 'page':
 			$key = $ctx['key'];
-			$f   = conti_fields( $ctx['id'] );
 			$map = array( 'products' => 'CollectionPage', 'literature' => 'CollectionPage', 'company' => 'AboutPage', 'history' => 'AboutPage', 'contact' => 'ContactPage' );
 			if ( 'privacy' !== $key && 'news' !== $key ) {
 				$graph[] = $web_page( $map[ $key ] ?? 'WebPage' );
@@ -311,37 +301,55 @@ function conti_schema_graph(): array {
 			if ( 'products' === $key ) {
 				$graph[] = conti_schema_family_list( $lang );
 			}
-			if ( 'production' === $key && ! empty( $f['steps'] ) ) {
-				$graph[] = array(
-					'@type'       => 'HowTo',
-					'name'        => $f['heading'] ?? '',
-					'description' => $f['lead'] ?? '',
-					'step'        => array_map( fn( $s, $i ) => array( '@type' => 'HowToStep', 'position' => $i + 1, 'name' => $s['title'], 'text' => $s['text'] ), $f['steps'], array_keys( $f['steps'] ) ),
-				);
-			}
 			if ( 'custom' === $key ) {
-				$graph[] = array( '@type' => 'Service', 'name' => $f['heading'] ?? '', 'description' => $meta['description'], 'provider' => array( '@id' => conti_org_id() ), 'serviceType' => 'Custom valve engineering', 'areaServed' => 'Worldwide' );
+				$graph[] = array( '@type' => 'Service', 'name' => conti_page_heading( $ctx['id'] ), 'description' => $meta['description'], 'provider' => array( '@id' => conti_org_id() ), 'serviceType' => 'Custom valve engineering', 'areaServed' => 'Worldwide' );
 			}
 			if ( 'alubronze' === $key ) {
 				$graph[] = conti_schema_product_list( conti_alubronze_products( $lang ) );
 			}
-			if ( 'news' === $key ) {
-				foreach ( (array) ( $f['items'] ?? array() ) as $i => $n ) {
-					$graph[] = array(
-						'@type'         => 'NewsArticle',
-						'headline'      => $n['title'],
-						'datePublished' => $n['date'],
-						'articleBody'   => $n['text'],
-						'inLanguage'    => $lang,
-						'author'        => array( '@id' => conti_org_id() ),
-						'publisher'     => array( '@id' => conti_org_id() ),
-						'url'           => conti_canonical() . '#news-' . ( $i + 1 ),
-					);
-				}
-			}
 			break;
 	}
+	if ( in_array( $ctx['type'], array( 'home', 'page' ), true ) ) {
+		array_push( $graph, ...conti_schema_from_blocks( $ctx['id'], $lang ) );
+	}
 	return $graph;
+}
+
+/** Structured data described by the blocks of a page: FAQ, production process (HowTo), news. */
+function conti_schema_from_blocks( int $id, string $lang ): array {
+	$out = array();
+	$faq = conti_block_items( $id, 'conti/faq' );
+	if ( $faq ) {
+		$out[] = array(
+			'@type'      => 'FAQPage',
+			'mainEntity' => array_map( fn( $q ) => array( '@type' => 'Question', 'name' => conti_plain( $q['q'] ?? '' ), 'acceptedAnswer' => array( '@type' => 'Answer', 'text' => conti_plain( $q['a'] ?? '' ) ) ), $faq ),
+		);
+	}
+	$steps = conti_block_items( $id, 'conti/steps', fn( $a ) => ! empty( $a['howTo'] ) );
+	if ( $steps ) {
+		$out[] = array(
+			'@type'       => 'HowTo',
+			'name'        => conti_page_heading( $id ),
+			'description' => conti_page_summary( $id ),
+			'step'        => array_map( fn( $s, $i ) => array( '@type' => 'HowToStep', 'position' => $i + 1, 'name' => conti_plain( $s['title'] ?? '' ), 'text' => conti_plain( $s['text'] ?? '' ) ), $steps, array_keys( $steps ) ),
+		);
+	}
+	foreach ( conti_block_items( $id, 'conti/news' ) as $i => $n ) {
+		$out[] = array_filter(
+			array(
+				'@type'         => 'NewsArticle',
+				'headline'      => conti_plain( $n['title'] ?? '' ),
+				'datePublished' => $n['date'] ?? '',
+				'articleBody'   => conti_plain( $n['text'] ?? '' ),
+				'image'         => conti_image_url( $n['image'] ?? 0, 'conti-wide' ),
+				'inLanguage'    => $lang,
+				'author'        => array( '@id' => conti_org_id() ),
+				'publisher'     => array( '@id' => conti_org_id() ),
+				'url'           => get_permalink( $id ) . '#news-' . ( $i + 1 ),
+			)
+		);
+	}
+	return $out;
 }
 
 function conti_schema_organization(): array {

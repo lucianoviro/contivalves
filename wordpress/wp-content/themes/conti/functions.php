@@ -5,7 +5,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CONTI_THEME_VERSION', '1.0.0' );
+define( 'CONTI_THEME_VERSION', '1.1.0' );
 
 add_action(
 	'after_setup_theme',
@@ -13,18 +13,26 @@ add_action(
 		add_theme_support( 'title-tag' );
 		add_theme_support( 'html5', array( 'script', 'style', 'search-form', 'gallery', 'caption' ) );
 		add_theme_support( 'responsive-embeds' );
+		// Block editor: the pages are edited with the site's own CSS (fonts, colours, components).
+		add_theme_support( 'editor-styles' );
+		add_editor_style( 'assets/css/site.css' );
 	}
 );
+
+// Front end: load only the CSS of the core blocks actually used in the page.
+add_filter( 'should_load_separate_core_block_assets', '__return_true' );
+// WordPress's global styles (theme.json) are for the editor: on the site the theme CSS does it all,
+// including the palette classes (has-*-color), and they would override it (e.g. underlined links).
+remove_action( 'wp_enqueue_scripts', 'wp_enqueue_global_styles' );
+remove_action( 'wp_footer', 'wp_enqueue_global_styles', 1 );
+// Keep the typography exactly as written (no automatic curly quotes, dashes, × signs).
+add_filter( 'run_wptexturize', '__return_false' );
 
 add_action(
 	'wp_enqueue_scripts',
 	function () {
 		wp_enqueue_style( 'conti', get_theme_file_uri( 'assets/css/site.css' ), array(), CONTI_THEME_VERSION );
 		wp_enqueue_script( 'conti', get_theme_file_uri( 'assets/js/site.js' ), array(), CONTI_THEME_VERSION, array( 'strategy' => 'defer', 'in_footer' => true ) );
-		// No block editor on the front end: drop its CSS.
-		wp_dequeue_style( 'wp-block-library' );
-		wp_dequeue_style( 'wp-block-library-theme' );
-		wp_dequeue_style( 'global-styles' );
 		wp_dequeue_style( 'classic-theme-styles' );
 	},
 	20

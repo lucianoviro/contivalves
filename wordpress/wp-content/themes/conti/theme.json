@@ -1,0 +1,52 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.5/theme.json",
+	"version": 2,
+	"settings": {
+		"appearanceTools": false,
+		"border": { "color": false, "radius": false, "style": false, "width": false },
+		"color": {
+			"custom": false,
+			"customDuotone": false,
+			"customGradient": false,
+			"defaultDuotone": false,
+			"defaultGradients": false,
+			"defaultPalette": false,
+			"duotone": [],
+			"gradients": [],
+			"link": false,
+			"palette": [
+				{ "slug": "ink", "name": "Nero testo", "color": "#15171c" },
+				{ "slug": "slate", "name": "Grigio Conti", "color": "#5f6571" },
+				{ "slug": "mist", "name": "Grigio chiaro", "color": "#f4f5f7" },
+				{ "slug": "paper", "name": "Bianco", "color": "#ffffff" },
+				{ "slug": "night", "name": "Nero footer", "color": "#0d0e11" },
+				{ "slug": "bronze", "name": "Bronzo", "color": "#c8702a" },
+				{ "slug": "bronze-ink", "name": "Bronzo scuro (testi)", "color": "#9c5220" },
+				{ "slug": "patina", "name": "Verde patina", "color": "#2f7f7a" }
+			]
+		},
+		"shadow": { "defaultPresets": false, "presets": [] },
+		"spacing": { "blockGap": null, "customSpacingSize": false, "margin": false, "padding": false, "units": [ "px", "rem" ] },
+		"typography": {
+			"customFontSize": false,
+			"defaultFontSizes": false,
+			"dropCap": false,
+			"fontSizes": [],
+			"fontStyle": false,
+			"fontWeight": false,
+			"letterSpacing": false,
+			"lineHeight": false,
+			"textDecoration": false,
+			"textTransform": false,
+			"writingMode": false,
+			"fontFamilies": [
+				{ "slug": "sans", "name": "Inter", "fontFamily": "'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" },
+				{ "slug": "display", "name": "Barlow Condensed", "fontFamily": "'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif" }
+			]
+		},
+		"blocks": {
+			"core/button": { "border": { "radius": false } },
+			"core/image": { "lightbox": { "allowEditing": false } }
+		}
+	}
+}
