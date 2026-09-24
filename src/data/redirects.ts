@@ -34,46 +34,51 @@ const OLD_PAGES: { route: Route; paths: Record<OldLang, string[]> }[] = [
 const target: Record<OldLang, Locale> = { it: 'it', en: 'en', es: 'es', fr: 'fr', de: 'de' };
 const prefix = (l: OldLang) => (l === 'it' ? '' : `/${l}`);
 
-export function redirects(): [string, string][] {
-  const out = new Map<string, string>();
+export interface OldRedirect { from: string; route: Route; lang: Locale; hash?: string }
+
+/** Old path → new route (language independent), so the same map serves Astro and WordPress. */
+export function redirectRoutes(): OldRedirect[] {
+  const out = new Map<string, OldRedirect>();
   // Never redirect a path that exists on the new site (e.g. /privacy-policy/ is now the English privacy page).
   const live = new Set(allRoutes().flatMap((r) => locales.map((l) => href(r, l))));
-  const add = (from: string, to: string) => {
+  const add = (from: string, route: Route, lang: Locale, hash?: string) => {
     const f = from.replace(/\/+$/, '') + '/';
-    if (f !== to && !live.has(f) && !out.has(f)) out.set(f, to);
+    if (f !== href(route, lang) && !live.has(f) && !out.has(f)) out.set(f, { from: f, route, lang, ...(hash ? { hash } : {}) });
   };
 
   for (const l of OLD_LANGS) {
     const lang = target[l];
-    // home of each old language
-    if (l !== 'it') add(`/${l}`, href({ page: 'home' }, lang));
-    add(`${prefix(l)}/home`, href({ page: 'home' }, lang));
+    if (l !== 'it') add(`/${l}`, { page: 'home' }, lang);
+    add(`${prefix(l)}/home`, { page: 'home' }, lang);
 
-    for (const p of OLD_PAGES) for (const path of p.paths[l]) add(`${prefix(l)}/${path}`, href(p.route, lang));
+    for (const p of OLD_PAGES) for (const path of p.paths[l]) add(`${prefix(l)}/${path}`, p.route, lang);
 
     // product categories: families and sub-categories (flat and hierarchical URLs)
     for (const f of families) {
       const wp = raw.families.find((x) => x.key === f.key)!.wpSlug;
-      const to = href({ page: 'family', family: f.key }, lang);
-      add(`${prefix(l)}/categorie_prodotti/${l === 'it' ? wp : f.key}`, to);
+      add(`${prefix(l)}/categorie_prodotti/${l === 'it' ? wp : f.key}`, { page: 'family', family: f.key }, lang);
     }
     for (const s of raw.subcategories) {
       const fam = raw.families.find((x) => x.key === s.family)!;
-      const to = href({ page: 'family', family: s.family as FamilyKey }, lang) + `#${s.key}`;
+      const route: Route = { page: 'family', family: s.family as FamilyKey };
       const slug = l === 'it' ? s.wpSlug : s.key;
       const parent = l === 'it' ? fam.wpSlug : fam.key;
-      add(`${prefix(l)}/categorie_prodotti/${slug}`, to);
-      add(`${prefix(l)}/categorie_prodotti/${parent}/${slug}`, to);
+      add(`${prefix(l)}/categorie_prodotti/${slug}`, route, lang, s.key);
+      add(`${prefix(l)}/categorie_prodotti/${parent}/${slug}`, route, lang, s.key);
     }
 
     // products: /prodotti/<code>/ and /prodotti/conti-valves-art-<code>/
     for (const p of products) {
-      const to = href({ page: 'product', family: p.family, code: p.code }, lang);
-      add(`${prefix(l)}/prodotti/${p.slug}`, to);
-      add(`${prefix(l)}/prodotti/${p.wpSlug}`, to);
+      const route: Route = { page: 'product', family: p.family, code: p.code };
+      add(`${prefix(l)}/prodotti/${p.slug}`, route, lang);
+      add(`${prefix(l)}/prodotti/${p.wpSlug}`, route, lang);
     }
   }
-  add('/prodotti', href({ page: 'products' }, 'it'));
-  add('/categorie_prodotti', href({ page: 'products' }, 'it'));
-  return [...out.entries()];
+  add('/prodotti', { page: 'products' }, 'it');
+  add('/categorie_prodotti', { page: 'products' }, 'it');
+  return [...out.values()];
+}
+
+export function redirects(): [string, string][] {
+  return redirectRoutes().map((r) => [r.from, href(r.route, r.lang) + (r.hash ? `#${r.hash}` : '')]);
 }

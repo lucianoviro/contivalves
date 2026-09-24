@@ -1,6 +1,6 @@
 import type { L, Locale } from './config';
 
-const ui = {
+export const ui = {
   'nav.products': { en: 'Products', it: 'Prodotti', fr: 'Produits', es: 'Productos', de: 'Produkte' },
   'nav.company': { en: 'Company', it: 'Azienda', fr: 'Entreprise', es: 'Empresa', de: 'Unternehmen' },
   'nav.companyOverview': { en: 'About Conti', it: 'Chi siamo', fr: 'Qui sommes-nous', es: 'Quiénes somos', de: 'Über Conti' },

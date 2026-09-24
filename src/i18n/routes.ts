@@ -9,12 +9,12 @@ export const segments = {
   production: { en: 'production', it: 'produzione', fr: 'production', es: 'produccion', de: 'produktion' },
   certifications: { en: 'certifications', it: 'certificazioni', fr: 'certifications', es: 'certificaciones', de: 'zertifizierungen' },
   environment: { en: 'environment', it: 'ambiente', fr: 'environnement', es: 'medio-ambiente', de: 'umwelt' },
-  applications: { en: 'applications', it: 'applicazioni', fr: 'applications', es: 'aplicaciones', de: 'anwendungen' },
+  applications: { en: 'applications', it: 'applicazioni', fr: 'domaines-d-application', es: 'aplicaciones', de: 'anwendungen' },
   custom: { en: 'custom-engineered-solutions', it: 'soluzioni-personalizzate', fr: 'solutions-sur-mesure', es: 'soluciones-a-medida', de: 'sonderloesungen' },
   alubronze: { en: 'aluminium-bronze-valves', it: 'valvole-bronzo-alluminio', fr: 'robinetterie-bronze-aluminium', es: 'valvulas-bronce-aluminio', de: 'aluminiumbronze-armaturen' },
   literature: { en: 'literature', it: 'documentazione', fr: 'documentation', es: 'documentacion', de: 'dokumentation' },
-  news: { en: 'news', it: 'news', fr: 'actualites', es: 'noticias', de: 'aktuelles' },
-  contact: { en: 'contact', it: 'contatti', fr: 'contact', es: 'contacto', de: 'kontakt' },
+  news: { en: 'news', it: 'notizie', fr: 'actualites', es: 'noticias', de: 'aktuelles' },
+  contact: { en: 'contact', it: 'contatti', fr: 'nous-contacter', es: 'contacto', de: 'kontakt' },
   privacy: { en: 'privacy-policy', it: 'privacy', fr: 'confidentialite', es: 'privacidad', de: 'datenschutz' },
 } satisfies Record<string, L>;
 

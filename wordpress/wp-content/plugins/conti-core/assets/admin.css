@@ -1,0 +1,23 @@
+.conti-json__ui { margin-top: 12px; }
+.conti-row { display: grid; grid-template-columns: 200px 1fr; gap: 8px 16px; align-items: start; padding: 10px 0; border-top: 1px solid #f0f0f1; }
+.conti-row--block { grid-template-columns: 1fr; }
+.conti-row__label { font-weight: 600; padding-top: 6px; }
+.conti-row--block > .conti-row__label { font-size: 14px; color: #1d2327; }
+.conti-row .regular-text, .conti-row .large-text { width: 100%; max-width: 760px; }
+.conti-group { padding-left: 14px; border-left: 3px solid #c8702a33; }
+.conti-list { display: grid; gap: 8px; }
+.conti-item { background: #f6f7f7; border: 1px solid #dcdcde; border-radius: 6px; padding: 8px 12px; }
+div.conti-item { display: flex; gap: 8px; align-items: flex-start; }
+div.conti-item > input, div.conti-item > textarea { flex: 1; }
+.conti-item__head { display: flex; justify-content: space-between; gap: 12px; cursor: pointer; font-weight: 600; }
+.conti-item__tools { display: inline-flex; gap: 10px; }
+.conti-item__tools .button-link { text-decoration: none; font-size: 15px; }
+.conti-item[open] > .conti-item__head { margin-bottom: 8px; }
+.conti-tuple { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; }
+.conti-media { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.conti-media__preview { display: inline-flex; align-items: center; gap: 8px; }
+.conti-media__preview img { width: 60px; height: 60px; object-fit: contain; background: #fff; border: 1px solid #dcdcde; border-radius: 4px; }
+.conti-media__name { color: #646970; font-size: 12px; }
+.conti-tsv { font-size: 12px; white-space: pre; tab-size: 12; }
+.conti-form th { width: 180px; }
+@media (max-width: 782px) { .conti-row { grid-template-columns: 1fr; } }
