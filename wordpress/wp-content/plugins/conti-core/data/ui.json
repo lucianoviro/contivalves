@@ -83,13 +83,6 @@
   "es": "Documentación",
   "de": "Dokumentation"
  },
- "nav.news": {
-  "en": "News",
-  "it": "News",
-  "fr": "Actualités",
-  "es": "Noticias",
-  "de": "Aktuelles"
- },
  "nav.contact": {
   "en": "Contact",
   "it": "Contatti",
@@ -418,13 +411,6 @@
   "fr": "Ouvrir dans Google Maps",
   "es": "Abrir en Google Maps",
   "de": "In Google Maps öffnen"
- },
- "news.readMore": {
-  "en": "Read more",
-  "it": "Leggi tutto",
-  "fr": "Lire la suite",
-  "es": "Leer más",
-  "de": "Weiterlesen"
  },
  "notFound.title": {
   "en": "Page not found",

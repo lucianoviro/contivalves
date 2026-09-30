@@ -17,7 +17,7 @@ $menus  = array(
 	array( 'label' => conti_t( 'nav.company' ), 'href' => $company[0]['href'], 'links' => $company ),
 	array( 'label' => conti_t( 'nav.applications' ), 'href' => $apps[0]['href'], 'links' => $apps ),
 );
-$simple = array( $page_link( 'literature' ), $page_link( 'news' ) );
+$simple = array( $page_link( 'literature' ) );
 ?><!doctype html>
 <html <?php language_attributes(); ?>>
 <head>

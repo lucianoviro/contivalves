@@ -113,43 +113,6 @@ export const documents = {
   ],
 };
 
-export interface NewsItem { date: string; image: string; title: L; text: L }
-
-export const newsPage: L<Meta & { heading: string }> = {
-  en: { title: 'News | Conti Valves', description: 'News from Conti Rubinetterie: certifications, new product lines and company updates.', heading: 'News' },
-  it: { title: 'News e novità | Conti Valves', description: 'Le novità di Conti Rubinetterie: certificazioni, nuove linee di prodotto e aggiornamenti aziendali.', heading: 'News' },
-  fr: { title: 'Actualités | Conti Valves', description: 'Les actualités de Conti Rubinetterie : certifications, nouvelles gammes et informations sur l’entreprise.', heading: 'Actualités' },
-  es: { title: 'Noticias | Conti Valves', description: 'Novedades de Conti Rubinetterie: certificaciones, nuevas líneas de producto y noticias de la empresa.', heading: 'Noticias' },
-  de: { title: 'Aktuelles | Conti Valves', description: 'Neuigkeiten von Conti Rubinetterie: Zertifizierungen, neue Produktlinien und Unternehmensmeldungen.', heading: 'Aktuelles' },
-};
-
-export const news: NewsItem[] = [
-  {
-    date: '2015-08-03',
-    image: '2015/08/bm-trada-ems-certification.jpg',
-    title: { en: 'Conti awarded ISO 14001 certification', it: 'Conti ottiene la certificazione ISO 14001', fr: 'Conti obtient la certification ISO 14001', es: 'Conti obtiene la certificación ISO 14001', de: 'Conti erhält die ISO-14001-Zertifizierung' },
-    text: {
-      en: 'We are pleased to announce that we have been awarded the ISO 14001 certification. It certifies Conti’s Environmental Management System (EMS) and marks our commitment to meeting the highest environmental standards.',
-      it: 'Siamo lieti di annunciare di aver ottenuto la certificazione ISO 14001. Il riconoscimento certifica il Sistema di Gestione Ambientale di Conti e conferma il nostro impegno a rispettare i più elevati standard ambientali.',
-      fr: 'Nous avons le plaisir d’annoncer l’obtention de la certification ISO 14001. Elle atteste le système de management environnemental de Conti et confirme notre engagement à respecter les plus hautes exigences environnementales.',
-      es: 'Nos complace anunciar que hemos obtenido la certificación ISO 14001. Certifica el Sistema de Gestión Ambiental de Conti y confirma nuestro compromiso con los más altos estándares ambientales.',
-      de: 'Wir freuen uns, die Zertifizierung nach ISO 14001 bekannt zu geben. Sie bestätigt das Umweltmanagementsystem von Conti und unser Engagement für höchste Umweltstandards.',
-    },
-  },
-  {
-    date: '2014-05-08',
-    image: '2014/05/water-lead-free.jpg',
-    title: { en: 'New lead-free line for drinking water', it: 'Nuova linea senza piombo per acqua potabile', fr: 'Nouvelle gamme sans plomb pour l’eau potable', es: 'Nueva línea sin plomo para agua potable', de: 'Neue bleifreie Linie für Trinkwasser' },
-    text: {
-      en: 'A new lead-free product line is available, designed for critical applications such as drinking water, the food industry and the medical and pharmaceutical industries. The line is manufactured with methods and treatments that meet the requirements of NSF/ANSI 61.',
-      it: 'È disponibile una nuova linea di prodotti senza piombo, pensata per settori esigenti come acqua potabile, industria alimentare, medicale e farmaceutica. La linea è realizzata con metodi e trattamenti conformi ai requisiti della norma NSF/ANSI 61.',
-      fr: 'Une nouvelle gamme sans plomb est disponible, conçue pour des applications exigeantes comme l’eau potable, l’agroalimentaire et les industries médicale et pharmaceutique. Elle est fabriquée selon des méthodes et traitements conformes aux exigences de la norme NSF/ANSI 61.',
-      es: 'Está disponible una nueva línea de productos sin plomo, pensada para aplicaciones exigentes como agua potable, industria alimentaria, médica y farmacéutica. Se fabrica con métodos y tratamientos que cumplen los requisitos de la norma NSF/ANSI 61.',
-      de: 'Eine neue bleifreie Produktlinie ist verfügbar – für anspruchsvolle Anwendungen wie Trinkwasser, Lebensmittel-, Medizin- und Pharmaindustrie. Sie wird mit Verfahren und Behandlungen gefertigt, die die Anforderungen der NSF/ANSI 61 erfüllen.',
-    },
-  },
-];
-
 export const contactPage: L<Meta & { heading: string; lead: string; departments: string; visit: string }> = {
   en: {
     title: 'Contact Conti Rubinetterie – Valduggia, Italy | Conti Valves',

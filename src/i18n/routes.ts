@@ -13,7 +13,6 @@ export const segments = {
   custom: { en: 'custom-engineered-solutions', it: 'soluzioni-personalizzate', fr: 'solutions-sur-mesure', es: 'soluciones-a-medida', de: 'sonderloesungen' },
   alubronze: { en: 'aluminium-bronze-valves', it: 'valvole-bronzo-alluminio', fr: 'robinetterie-bronze-aluminium', es: 'valvulas-bronce-aluminio', de: 'aluminiumbronze-armaturen' },
   literature: { en: 'literature', it: 'documentazione', fr: 'documentation', es: 'documentacion', de: 'dokumentation' },
-  news: { en: 'news', it: 'notizie', fr: 'actualites', es: 'noticias', de: 'aktuelles' },
   contact: { en: 'contact', it: 'contatti', fr: 'nous-contacter', es: 'contacto', de: 'kontakt' },
   privacy: { en: 'privacy-policy', it: 'privacy', fr: 'confidentialite', es: 'privacidad', de: 'datenschutz' },
 } satisfies Record<string, L>;
@@ -26,7 +25,7 @@ export type Route =
   | { page: 'product'; family: FamilyKey; code: string }
   | { page: 'company' | 'history' | 'production' | 'certifications' | 'environment' }
   | { page: 'applications' | 'custom' | 'alubronze' }
-  | { page: 'literature' | 'news' | 'contact' | 'privacy' };
+  | { page: 'literature' | 'contact' | 'privacy' };
 
 const COMPANY_CHILDREN = ['history', 'production', 'certifications', 'environment'] as const;
 const APPLICATION_CHILDREN = ['custom', 'alubronze'] as const;

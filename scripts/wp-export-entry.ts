@@ -18,7 +18,7 @@ import { company, historyPage, milestones } from '../src/content/company';
 import { production, certifications, certificateImages } from '../src/content/production';
 import { environment } from '../src/content/environment';
 import { applications, industries, custom, alubronze } from '../src/content/applications';
-import { productsPage, literature, documents, newsPage, news, contactPage } from '../src/content/misc';
+import { productsPage, literature, documents, contactPage } from '../src/content/misc';
 import { privacy, privacyUpdated } from '../src/content/privacy';
 
 const OUT = process.argv[2];
@@ -286,11 +286,6 @@ const pages: Record<string, PageDef> = {
       cta(),
     ];
   }),
-
-  news: page(null, segments.news, newsPage, (l) => [
-    head({ heading: newsPage[l].heading }),
-    section({ width: 'narrow' }, b('news', { items: news.map((n) => ({ date: n.date, image: n.image, title: n.title[l], text: n.text[l] })) })),
-  ]),
 
   contact: page(null, segments.contact, contactPage, (l) => {
     const f = contactPage[l];

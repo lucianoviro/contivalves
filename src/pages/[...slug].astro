@@ -21,7 +21,6 @@ import Applications from '../views/Applications.astro';
 import Custom from '../views/Custom.astro';
 import Alubronze from '../views/Alubronze.astro';
 import Literature from '../views/Literature.astro';
-import News from '../views/News.astro';
 import Contact from '../views/Contact.astro';
 import Privacy from '../views/Privacy.astro';
 
@@ -51,6 +50,5 @@ const common = { lang, alternates: alts };
 {route.page === 'custom' && <Custom {...common} />}
 {route.page === 'alubronze' && <Alubronze {...common} />}
 {route.page === 'literature' && <Literature {...common} />}
-{route.page === 'news' && <News {...common} />}
 {route.page === 'contact' && <Contact {...common} />}
 {route.page === 'privacy' && <Privacy {...common} />}

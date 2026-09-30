@@ -13,7 +13,6 @@ export const ui = {
   'nav.custom': { en: 'Custom engineered solutions', it: 'Soluzioni personalizzate', fr: 'Solutions sur mesure', es: 'Soluciones a medida', de: 'Sonderlösungen' },
   'nav.alubronze': { en: 'Aluminium bronze valves', it: 'Valvole in bronzo-alluminio', fr: 'Robinetterie en bronze-aluminium', es: 'Válvulas de bronce-aluminio', de: 'Armaturen aus Aluminiumbronze' },
   'nav.literature': { en: 'Literature', it: 'Documentazione', fr: 'Documentation', es: 'Documentación', de: 'Dokumentation' },
-  'nav.news': { en: 'News', it: 'News', fr: 'Actualités', es: 'Noticias', de: 'Aktuelles' },
   'nav.contact': { en: 'Contact', it: 'Contatti', fr: 'Contact', es: 'Contacto', de: 'Kontakt' },
   'nav.privacy': { en: 'Privacy policy', it: 'Privacy policy', fr: 'Politique de confidentialité', es: 'Política de privacidad', de: 'Datenschutz' },
   'nav.home': { en: 'Home', it: 'Home', fr: 'Accueil', es: 'Inicio', de: 'Startseite' },
@@ -66,7 +65,6 @@ export const ui = {
   'contact.technical': { en: 'Technical department', it: 'Ufficio tecnico', fr: 'Bureau technique', es: 'Oficina técnica', de: 'Technische Abteilung' },
   'contact.map': { en: 'Open in Google Maps', it: 'Apri in Google Maps', fr: 'Ouvrir dans Google Maps', es: 'Abrir en Google Maps', de: 'In Google Maps öffnen' },
 
-  'news.readMore': { en: 'Read more', it: 'Leggi tutto', fr: 'Lire la suite', es: 'Leer más', de: 'Weiterlesen' },
   'notFound.title': { en: 'Page not found', it: 'Pagina non trovata', fr: 'Page introuvable', es: 'Página no encontrada', de: 'Seite nicht gefunden' },
   'notFound.text': { en: 'The page you are looking for has moved or no longer exists. Try the product catalogue or the home page.', it: 'La pagina che cerchi è stata spostata o non esiste più. Prova dal catalogo prodotti o dalla home page.', fr: 'La page recherchée a été déplacée ou n’existe plus. Essayez le catalogue ou la page d’accueil.', es: 'La página que busca se ha movido o ya no existe. Pruebe desde el catálogo o la página de inicio.', de: 'Die gesuchte Seite wurde verschoben oder existiert nicht mehr. Versuchen Sie es über den Produktkatalog oder die Startseite.' },
   'media.missing': { en: 'Image coming soon', it: 'Immagine in arrivo', fr: 'Image à venir', es: 'Imagen próximamente', de: 'Bild folgt' },

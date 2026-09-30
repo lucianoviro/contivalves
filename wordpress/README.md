@@ -16,7 +16,7 @@ Requisiti: WordPress 6.4+, PHP 8.0+, plugin gratuito **Polylang** (lingue). Ness
 2. **Plugin → Aggiungi nuovo**: installa e attiva **Polylang**. Il wizard iniziale si può saltare (le lingue le crea l’importatore).
 3. Carica tema e plugin: **Aspetto → Temi → Aggiungi → Carica** `conti-theme.zip` e **Plugin → Aggiungi → Carica** `conti-core.zip` (oppure copia le due cartelle via FTP in `wp-content/`). Attiva prima il plugin, poi il tema.
 4. Immagini: se puoi, copia la cartella `wp-content/uploads/` del vecchio sito nella stessa posizione del nuovo. Altrimenti l’importatore le scarica da `https://www.contivalves.com/wp-content/uploads/` (il vecchio sito deve essere ancora online).
-5. **Strumenti → Importa contenuti Conti → Avvia importazione.** Crea lingue (EN predefinita senza prefisso, IT, FR, ES, DE), ~320 immagini e PDF, 11 famiglie e 28 sottocategorie, 14 pagine e 123 prodotti in 5 lingue, e cerca le schede tecniche PDF nelle vecchie pagine prodotto. Con WP-CLI: `wp conti import`.
+5. **Strumenti → Importa contenuti Conti → Avvia importazione.** Crea lingue (EN predefinita senza prefisso, IT, FR, ES, DE), ~320 immagini e PDF, 11 famiglie e 28 sottocategorie, 13 pagine e 123 prodotti in 5 lingue, e cerca le schede tecniche PDF nelle vecchie pagine prodotto. Con WP-CLI: `wp conti import`.
 6. **Impostazioni → Conti**: inserisci la **Partita IVA** (obbligatoria) e, se ci sono, i profili LinkedIn/YouTube.
 7. **Lingue → Impostazioni → URL**: verifica “La lingua è impostata dal nome della directory”, “Nascondi le informazioni sulla lingua predefinita nell’URL” e “Rimuovi /language/” (l’importatore le imposta già).
 8. **Impostazioni → Permalink**: clicca “Salva” una volta (rigenera gli URL).
@@ -64,16 +64,17 @@ Oltre ai blocchi Conti si possono usare Paragrafo (stili “Testo introduttivo�
 Identici alla versione statica: `/products/ball-valves/04352/`, `/it/prodotti/valvole-a-sfera/04352/`, `/de/produkte/kugelhaehne/04352/`…
 Pagine: `/company/history/`, `/it/azienda/storia/`, `/fr/entreprise/histoire/`…
 Extra: `/sitemap.xml` (con hreflang), `/robots.txt`, `/llms.txt`, `/llms-full.txt`.
-I vecchi URL di WordPress/qTranslate (1.649 regole, tutte le lingue) rispondono con un redirect 301 alla pagina nuova.
+I vecchi URL di WordPress/qTranslate (1.654 regole, tutte le lingue) rispondono con un redirect 301 alla pagina nuova.
+Le news non ci sono più: la vecchia sezione e la pagina News della prima versione portano alla home, i due articoli alla pagina sullo stesso tema (ISO 14001 → Ambiente, linea senza piombo → Prodotti).
 
 ## Aggiornare i dati di partenza
 
 I file in `conti-core/data/*.json` sono generati dal sito statico: `npm run export:wp` nella radice del repository.
-Servono all’importatore e contengono glossario (traduzione di componenti/materiali), testi dell’interfaccia, redirect e le 14 pagine già composte a blocchi nelle 5 lingue (`pages.json`).
+Servono all’importatore e contengono glossario (traduzione di componenti/materiali), testi dell’interfaccia, redirect e le 13 pagine già composte a blocchi nelle 5 lingue (`pages.json`).
 
 ## Test eseguiti
 
-WordPress 6.7 + SQLite in locale: importazione completa (ripetibile senza duplicati), 740 pagine tutte 200, nessun link interno rotto,
+WordPress 6.7 + SQLite in locale: importazione completa (ripetibile senza duplicati), 735 pagine tutte 200, nessun link interno rotto,
 1 H1 per pagina, JSON-LD valido, titoli univoci, redirect dai vecchi URL, 404 corretti, modifica e salvataggio di pagine e prodotti dal pannello.
 Le 70 pagine a blocchi producono lo stesso HTML del sito statico (confronto automatico della struttura) e si aprono nell’editor senza blocchi non validi né errori.
 

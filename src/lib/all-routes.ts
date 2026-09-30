@@ -11,6 +11,6 @@ export function allRoutes(): Route[] {
     ...products.map((p) => ({ page: 'product' as const, family: p.family, code: p.code })),
     ...(['company', 'history', 'production', 'certifications', 'environment'] as const).map((page) => ({ page })),
     ...(['applications', 'custom', 'alubronze'] as const).map((page) => ({ page })),
-    ...(['literature', 'news', 'contact', 'privacy'] as const).map((page) => ({ page })),
+    ...(['literature', 'contact', 'privacy'] as const).map((page) => ({ page })),
   ];
 }

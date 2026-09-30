@@ -32,7 +32,7 @@ function conti_import_page(): void {
 	?>
 	<div class="wrap">
 		<h1>Importa contenuti Conti</h1>
-		<p>Crea (o aggiorna) in un colpo: lingue, immagini, famiglie di prodotto, le 14 pagine e i 123 prodotti in 5 lingue, con i testi del nuovo sito.</p>
+		<p>Crea (o aggiorna) in un colpo: lingue, immagini, famiglie di prodotto, le 13 pagine e i 123 prodotti in 5 lingue, con i testi del nuovo sito.</p>
 		<ol>
 			<li>Polylang deve essere attivo<?php echo $ready ? ' ✅' : ' ❌ <strong>(attivalo prima di procedere)</strong>'; ?>. Le lingue EN (predefinita), IT, FR, ES, DE vengono create se mancano.</li>
 			<li>Immagini e PDF vengono presi, in quest’ordine, da <code>wp-content/uploads/</code> di questo sito (se hai copiato la cartella uploads del vecchio sito) oppure scaricati dall’indirizzo qui sotto.</li>
@@ -404,8 +404,56 @@ function conti_import_pages(): array {
 		}
 	}
 	update_option( 'conti_pages', $map, false );
-	return array( sprintf( 'Pagine: %d × %d lingue.', count( $pages ), count( conti_langs() ) ) );
+	$log     = array( sprintf( 'Pagine: %d × %d lingue.', count( $pages ), count( conti_langs() ) ) );
+	$retired = conti_retire_pages();
+	if ( $retired ) {
+		$log[] = "Pagine non più previste spostate nel cestino: {$retired}.";
+	}
+	return $log;
 }
+
+/**
+ * Pages of earlier versions that the site no longer has (e.g. News, removed in 1.2.0) go to the
+ * trash; their addresses redirect elsewhere (data/redirects.json).
+ */
+function conti_retire_pages(): int {
+	$keys = array_keys( conti_data( 'pages' ) );
+	if ( ! $keys ) {
+		return 0;
+	}
+	$ids = get_posts(
+		array(
+			'post_type'   => 'page',
+			'post_status' => 'any',
+			'numberposts' => -1,
+			'fields'      => 'ids',
+			'lang'        => '',
+			'meta_query'  => array( array( 'key' => '_conti_page', 'value' => $keys, 'compare' => 'NOT IN' ) ), // phpcs:ignore
+		)
+	);
+	foreach ( $ids as $id ) {
+		wp_trash_post( $id );
+	}
+	$map = conti_page_map();
+	if ( array_diff_key( $map, array_flip( $keys ) ) ) {
+		update_option( 'conti_pages', array_intersect_key( $map, array_flip( $keys ) ), false );
+	}
+	return count( $ids );
+}
+
+// After a plugin update: apply the changes to the content that the new version brings.
+add_action(
+	'admin_init',
+	function () {
+		if ( get_option( 'conti_core_version' ) === CONTI_CORE_VERSION ) {
+			return;
+		}
+		if ( conti_page_map() ) {
+			conti_retire_pages();
+		}
+		update_option( 'conti_core_version', CONTI_CORE_VERSION, false );
+	}
+);
 
 /* ── Products ──────────────────────────────────────────────────────────── */
 

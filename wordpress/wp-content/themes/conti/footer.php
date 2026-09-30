@@ -34,7 +34,7 @@ $nav  = fn( $key, $label = null ) => sprintf( '<li><a href="%s">%s</a></li>', es
 				<ul>
 					<?php
 					echo $nav( 'company', conti_t( 'nav.companyOverview' ) ) . $nav( 'history' ) . $nav( 'production' ) . $nav( 'certifications' ) . $nav( 'environment' ) // phpcs:ignore
-						. $nav( 'applications', conti_t( 'nav.industries' ) ) . $nav( 'custom' ) . $nav( 'literature' ) . $nav( 'news' ) . $nav( 'contact' );
+						. $nav( 'applications', conti_t( 'nav.industries' ) ) . $nav( 'custom' ) . $nav( 'literature' ) . $nav( 'contact' );
 					?>
 				</ul>
 			</nav>

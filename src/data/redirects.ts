@@ -25,7 +25,10 @@ const OLD_PAGES: { route: Route; paths: Record<OldLang, string[]> }[] = [
   { route: { page: 'custom' }, paths: { it: ['applicazioni/soluzioni-personalizzate', 'soluzioni-personalizzate'], en: ['applications/custom-engineered-solutions'], es: ['mercados/soluciones-de-valvulas-de-ingenieria'], fr: ['applications/solutions-de-soupapes-specialises'], de: ['anwendungen/personifizierte-losungen'] } },
   { route: { page: 'alubronze' }, paths: { it: ['applicazioni/serie-bronzo-alluminio'], en: ['applications/bronze-aluminium-valves'], es: ['mercados/bronce-aluminio'], fr: ['applications/serie-bronze-aluminium'], de: ['anwendungen/aluminium-bronze-ventile'] } },
   { route: { page: 'literature' }, paths: { it: ['documentazione'], en: ['literature'], es: ['literature'], fr: ['documentation'], de: ['dokumentationstatigkeit'] } },
-  { route: { page: 'news' }, paths: { it: ['news-eventi', 'conti-ha-ottenuto-la-certificazione-iso-14001', 'nuova-linea-acqua-potabile-lead-free', 'valve-world-dusseldorf-2016'], en: ['news-events', 'we-awarded-the-iso-14001', 'new-drinking-water-line-lead-free'], es: ['news', 'we-awarded-the-iso-14001', 'new-drinking-water-line-lead-free'], fr: ['news', 'we-awarded-the-iso-14001', 'new-drinking-water-line-lead-free'], de: ['news', 'we-awarded-the-iso-14001', 'new-drinking-water-line-lead-free'] } },
+  // Old news (the new site has no news section): each article to the page on the same subject, the rest to the home page.
+  { route: { page: 'home' }, paths: { it: ['news-eventi', 'valve-world-dusseldorf-2016'], en: ['news-events'], es: ['news'], fr: ['news'], de: ['news'] } },
+  { route: { page: 'environment' }, paths: { it: ['conti-ha-ottenuto-la-certificazione-iso-14001'], en: ['we-awarded-the-iso-14001'], es: ['we-awarded-the-iso-14001'], fr: ['we-awarded-the-iso-14001'], de: ['we-awarded-the-iso-14001'] } },
+  { route: { page: 'products' }, paths: { it: ['nuova-linea-acqua-potabile-lead-free'], en: ['new-drinking-water-line-lead-free'], es: ['new-drinking-water-line-lead-free'], fr: ['new-drinking-water-line-lead-free'], de: ['new-drinking-water-line-lead-free'] } },
   { route: { page: 'contact' }, paths: { it: ['contatti'], en: ['contacts'], es: ['contactos'], fr: ['contacts'], de: ['kontakt'] } },
   { route: { page: 'privacy' }, paths: { it: ['informativa-privacy', 'privacy-policy'], en: ['privacy-policy'], es: ['privacy-policy'], fr: ['privacy-policy'], de: ['privacy-policy'] } },
 ];
@@ -74,6 +77,10 @@ export function redirectRoutes(): OldRedirect[] {
       add(`${prefix(l)}/prodotti/${p.wpSlug}`, route, lang);
     }
   }
+  // News page of the first version of the new site, since removed.
+  const removedNews: Record<Locale, string> = { en: '/news', it: '/it/notizie', fr: '/fr/actualites', es: '/es/noticias', de: '/de/aktuelles' };
+  for (const l of locales) add(removedNews[l], { page: 'home' }, l);
+
   add('/prodotti', { page: 'products' }, 'it');
   add('/categorie_prodotti', { page: 'products' }, 'it');
   return [...out.values()];

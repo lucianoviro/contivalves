@@ -25,7 +25,7 @@ npm run preview        # serve dist/
 | `src/data/families.ts` | Famiglie di prodotto: nomi, slug URL e testi introduttivi nelle 5 lingue |
 | `src/data/glossary.ts` | Traduzioni di componenti, materiali e versioni (tabelle tecniche) |
 | `src/data/site.ts` | Dati aziendali (indirizzo, email, telefono, **P. IVA da inserire**) |
-| `src/content/*.ts` | Testi delle pagine (home, azienda, storia, produzione, certificazioni, ambiente, applicazioni, documentazione, news, contatti, privacy) |
+| `src/content/*.ts` | Testi delle pagine (home, azienda, storia, produzione, certificazioni, ambiente, applicazioni, documentazione, contatti, privacy) |
 | `src/i18n/` | Lingue, URL localizzati, testi dell'interfaccia |
 | `src/views/` | Template delle pagine · `src/components/` componenti · `src/styles/global.css` design system |
 | `src/data/redirects.ts` | Redirect 301 dai vecchi URL WordPress (generati in `dist/_redirects`) |
@@ -48,7 +48,7 @@ Per sostituire un'immagine basta sovrascrivere il file con lo stesso nome.
 ## SEO e GEO
 - URL puliti e localizzati, `hreflang` + `x-default`, canonical, sitemap con alternate (`/sitemap.xml`), `robots.txt`.
 - Dati strutturati schema.org (JSON-LD): Organization, WebSite, BreadcrumbList, Product (per ogni articolo, con materiali e proprietà),
-  ItemList, FAQPage, HowTo (processo produttivo), NewsArticle, AboutPage/ContactPage.
+  ItemList, FAQPage, HowTo (processo produttivo), AboutPage/ContactPage.
 - `/llms.txt` e `/llms-full.txt`: sintesi aziendale e catalogo completo in testo semplice per gli assistenti AI.
 - Dati tecnici in vere tabelle HTML (non immagini): dimensioni, pesi, materiali, versioni.
 - FAQ in home con risposte fattuali; pagine prodotto stampabili come scheda tecnica (Stampa → PDF).

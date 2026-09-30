@@ -42,7 +42,6 @@ const CONTI_PAGE_NAV = array(
 	'custom'         => 'nav.custom',
 	'alubronze'      => 'nav.alubronze',
 	'literature'     => 'nav.literature',
-	'news'           => 'nav.news',
 	'contact'        => 'nav.contact',
 	'privacy'        => 'nav.privacy',
 );
@@ -295,7 +294,7 @@ function conti_schema_graph(): array {
 		case 'page':
 			$key = $ctx['key'];
 			$map = array( 'products' => 'CollectionPage', 'literature' => 'CollectionPage', 'company' => 'AboutPage', 'history' => 'AboutPage', 'contact' => 'ContactPage' );
-			if ( 'privacy' !== $key && 'news' !== $key ) {
+			if ( 'privacy' !== $key ) {
 				$graph[] = $web_page( $map[ $key ] ?? 'WebPage' );
 			}
 			if ( 'products' === $key ) {

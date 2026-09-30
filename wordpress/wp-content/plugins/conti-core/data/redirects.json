@@ -93,28 +93,28 @@
  {
   "from": "/news-eventi/",
   "route": {
-   "page": "news"
-  },
-  "lang": "it"
- },
- {
-  "from": "/conti-ha-ottenuto-la-certificazione-iso-14001/",
-  "route": {
-   "page": "news"
-  },
-  "lang": "it"
- },
- {
-  "from": "/nuova-linea-acqua-potabile-lead-free/",
-  "route": {
-   "page": "news"
+   "page": "home"
   },
   "lang": "it"
  },
  {
   "from": "/valve-world-dusseldorf-2016/",
   "route": {
-   "page": "news"
+   "page": "home"
+  },
+  "lang": "it"
+ },
+ {
+  "from": "/conti-ha-ottenuto-la-certificazione-iso-14001/",
+  "route": {
+   "page": "environment"
+  },
+  "lang": "it"
+ },
+ {
+  "from": "/nuova-linea-acqua-potabile-lead-free/",
+  "route": {
+   "page": "products"
   },
   "lang": "it"
  },
@@ -3032,21 +3032,21 @@
  {
   "from": "/en/news-events/",
   "route": {
-   "page": "news"
+   "page": "home"
   },
   "lang": "en"
  },
  {
   "from": "/en/we-awarded-the-iso-14001/",
   "route": {
-   "page": "news"
+   "page": "environment"
   },
   "lang": "en"
  },
  {
   "from": "/en/new-drinking-water-line-lead-free/",
   "route": {
-   "page": "news"
+   "page": "products"
   },
   "lang": "en"
  },
@@ -5936,21 +5936,21 @@
  {
   "from": "/es/news/",
   "route": {
-   "page": "news"
+   "page": "home"
   },
   "lang": "es"
  },
  {
   "from": "/es/we-awarded-the-iso-14001/",
   "route": {
-   "page": "news"
+   "page": "environment"
   },
   "lang": "es"
  },
  {
   "from": "/es/new-drinking-water-line-lead-free/",
   "route": {
-   "page": "news"
+   "page": "products"
   },
   "lang": "es"
  },
@@ -8854,21 +8854,21 @@
  {
   "from": "/fr/news/",
   "route": {
-   "page": "news"
+   "page": "home"
   },
   "lang": "fr"
  },
  {
   "from": "/fr/we-awarded-the-iso-14001/",
   "route": {
-   "page": "news"
+   "page": "environment"
   },
   "lang": "fr"
  },
  {
   "from": "/fr/new-drinking-water-line-lead-free/",
   "route": {
-   "page": "news"
+   "page": "products"
   },
   "lang": "fr"
  },
@@ -11772,21 +11772,21 @@
  {
   "from": "/de/news/",
   "route": {
-   "page": "news"
+   "page": "home"
   },
   "lang": "de"
  },
  {
   "from": "/de/we-awarded-the-iso-14001/",
   "route": {
-   "page": "news"
+   "page": "environment"
   },
   "lang": "de"
  },
  {
   "from": "/de/new-drinking-water-line-lead-free/",
   "route": {
-   "page": "news"
+   "page": "products"
   },
   "lang": "de"
  },
@@ -14600,6 +14600,41 @@
    "page": "product",
    "family": "y-strainers",
    "code": "54217"
+  },
+  "lang": "de"
+ },
+ {
+  "from": "/news/",
+  "route": {
+   "page": "home"
+  },
+  "lang": "en"
+ },
+ {
+  "from": "/it/notizie/",
+  "route": {
+   "page": "home"
+  },
+  "lang": "it"
+ },
+ {
+  "from": "/fr/actualites/",
+  "route": {
+   "page": "home"
+  },
+  "lang": "fr"
+ },
+ {
+  "from": "/es/noticias/",
+  "route": {
+   "page": "home"
+  },
+  "lang": "es"
+ },
+ {
+  "from": "/de/aktuelles/",
+  "route": {
+   "page": "home"
   },
   "lang": "de"
  },
